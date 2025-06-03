@@ -48,7 +48,7 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
         id_panneau = cursor.lastrowid
 
         # ONDULEUR
-        marque_onduleur = row["onduleur_marque"].strip()
+        marque_onduleur = row["nom_marque"].strip()
         modele_onduleur = row["onduleur_modele"].strip()
         cursor.execute("SELECT id_marque_onduleur FROM Marque_onduleur WHERE nom_marque = %s", (marque_onduleur,))
         res = cursor.fetchone()
