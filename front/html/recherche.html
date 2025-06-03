@@ -17,14 +17,83 @@
       </a>
       <div class="collapse navbar-collapse justify-content-end">
         <ul class="navbar-nav">
-          <li class="nav-item"><a class="nav-link fw-bold" href="accueil.html"><span class="info-blue">Accueil</span></a></li>
+          <li class="nav-item"a class="nav-link fw-bold" href="accueil.html"><span class="info-blue">Accueil</span></a></li>
           <li class="nav-item"><a class="nav-link" href="recherche.html"><span class="info-blue">Recherche</span></a></li>
           <li class="nav-item"><a class="nav-link" href="carte.html"><span class="info-blue">Carte</span></a></li>
         </ul>
       </div>
     </div>
   </nav>
+
+  <!-- Contenu principal -->
+<div class="container my-5">
+  <!-- Barre de recherche -->
+  <div class="mb-4">
+    <input type="text" class="form-control form-control-lg" placeholder="Rechercher">
+  </div>
+
+  <!-- Filtres -->
+  <div class="bg-light p-4 rounded mb-5 border">
+    <h5 class="mb-3">Filtrer</h5>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="filterOnduleur">
+      <label class="form-check-label" for="filterOnduleur">Marque onduleur</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="filterPanneaux">
+      <label class="form-check-label" for="filterPanneaux">Marque panneaux</label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="filterDepartement">
+      <label class="form-check-label" for="filterDepartement">Département</label>
+    </div>
+  </div>
  
+  <!-- Tableau -->
+<div class="table-responsive">
+  <table class="table table-bordered text-center align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Date d'installation</th>
+        <th>Nombre de panneaux</th>
+        <th>Surface</th>
+        <th>Puissance crête</th>
+        <th>Localisation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Ligne d'infos -->
+      <tr>
+        <td>01/01/2025</td>
+        <td>20</td>
+        <td>50 m²</td>
+        <td>5 kWc</td>
+        <td>Lille</td>
+      </tr>
+      <!-- Ligne de détails -->
+      <tr class="table-secondary">
+        <td colspan="5">
+          <a href="#">Cliquez ici pour voir les détails de cette installation</a>
+        </td>
+      </tr>
+
+      <!-- Deuxième ligne d'infos -->
+      <tr>
+        <td>15/02/2025</td>
+        <td>30</td>
+        <td>75 m²</td>
+        <td>7.5 kWc</td>
+        <td>Lyon</td>
+      </tr>
+      <!-- Détails -->
+      <tr class="table-secondary">
+        <td colspan="5">
+          <a href="#">Cliquez ici pour voir les détails de cette installation</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
     
     
 
