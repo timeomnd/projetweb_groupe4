@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import csv
 import mysql.connector
 
@@ -11,7 +10,8 @@ conn = mysql.connector.connect(
 )
 cursor = conn.cursor()
 
-with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
+with open("csv/data_utf8.csv", newline='', encoding="utf-8") as csvfile:
+
     reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
 
     for row in reader:
@@ -69,6 +69,33 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
         cursor.execute("INSERT INTO Onduleur (id_modele_onduleur, id_marque_onduleur) VALUES (%s, %s)", (id_modele_onduleur, id_marque_onduleur))
         id_onduleur = cursor.lastrowid
 
+        # LOCALISATION
+        lat = float(row["lat"])
+        lon = float(row["lon"])
+        commune_nom = row["administrative_area_level_1"]
+        departement_nom = row["administrative_area_level_2"]
+        code_postal = row["postal_code"]
+
+        cursor.execute("""
+            SELECT c.code_insee
+            FROM Commune c
+            JOIN Departement d ON c.dep_code = d.dep_code
+            WHERE c.nom_standard = %s AND c.code_postal = %s AND d.dep_nom = %s
+            LIMIT 1
+        """, (commune_nom, code_postal, departement_nom))
+        res = cursor.fetchone()
+
+        if not res:
+            print(f"[⚠] Commune introuvable → {code_postal}, {departement_nom}, {commune_nom}")
+            continue
+        code_insee = res[0]
+
+        cursor.execute("""
+            INSERT INTO Localisation (lat, lon, code_insee)
+            VALUES (%s, %s, %s)
+        """, (lat, lon, code_insee))
+        id_localisation = cursor.lastrowid
+
         # INSTALLATION
         mois = int(row["mois_installation"])
         an = int(row["an_installation"])
@@ -87,44 +114,15 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
                 mois_installation, an_installation, nb_panneaux, nb_onduleur,
                 pente, pente_optimum, orientation, orientation_optimum,
                 surface, production_pvgis, puissance_crete,
-                id_panneau, id_onduleur, id_installateur
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                id_localisation, id_panneau, id_onduleur, id_installateur
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             mois, an, nb_panneaux, nb_onduleur, pente, pente_optimum,
             orientation, orientation_optimum, surface, production, puissance,
-            id_panneau, id_onduleur, id_installateur
+            id_localisation, id_panneau, id_onduleur, id_installateur
         ))
-        id_installation = cursor.lastrowid
-
-        # LOCALISATION
-        lat = float(row["lat"])
-        lon = float(row["lon"])
-
-        administrative_area_level_1 = row["administrative_area_level_1"].strip()
-        administrative_area_level_2 = row["administrative_area_level_2"].strip()
-
-        code_postal = row["postal_code"].strip()
-        cursor.execute("""
-            SELECT c.code_insee
-            FROM Commune c
-            JOIN Departement d ON c.dep_code = d.dep_code
-            JOIN Region r ON d.reg_code = r.reg_code
-            WHERE c.code_postal = %s AND d.dep_nom = %s AND r.reg_nom = %s
-            LIMIT 1
-        """, (code_postal,administrative_area_level_2, administrative_area_level_1))
-        res = cursor.fetchone()
-        code_insee = res[0] if res else None
-
-        cursor.execute("""
-            INSERT INTO Localisation (lat, lon, code_postal, code_insee)
-            VALUES (%s, %s, %s, %s)
-        """, (lat, lon, code_postal, code_insee))
-        id_localisation = cursor.lastrowid
-
-        # INSTALLER
-        cursor.execute("INSERT INTO Installer (id_localisation, id_installation) VALUES (%s, %s)", (id_localisation, id_installation))
 
 conn.commit()
 cursor.close()
 conn.close()
-print(" Données de data.csv importées avec succès")
+print("✅ Données importées avec succès dans toutes les tables.")

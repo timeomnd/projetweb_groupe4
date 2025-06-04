@@ -15,36 +15,53 @@
     </head>
     <body>
         <nav class="navbar navbar-expand-lg bg-white border-bottom w-100 px-4 py-3">
-            <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center" href="accueil.html">
-                    <img src="../../assets/ENERGISEN_LOGO.png" alt="Logo" width="70" height="70" class="me-2 map">
-                    <strong class="info-blue">ENERG'ISEN</strong>
-                </a>
-                <div class="collapse navbar-collapse justify-content-end">
-                    <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link fw-bold" href="accueil.html"><span class="info-blue">Accueil</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="recherche.html"><span class="info-blue">Recherche</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="carte.html"><span class="info-blue">Carte</span></a></li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="accueil.html">
+        <img src="../../assets/ENERGISEN_LOGO.png" alt="Logo" width="70" height="70" class="me-2 map">
+        <strong class="info-blue nav-link fw-bold">ENERG'ISEN</strong>
+      </a>  
+      <div class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="info-blue nav-link" href="accueil.html">Accueil</a></li>
+          <li class="nav-item"><a class="info-blue nav-link" href="recherche.html">Recherche</a></li>
+          <li class="nav-item"><a class="info-blue nav-link" href="carte.html">Carte</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
         <div class="container my-5">
             <!-- Filtres -->
-            <div class="bg-light p-4 rounded mb-5 border">
-                <div class="d-flex align-items-center mb-3">
+             <form>
+            <div class="bg-white p-4 rounded shadow-sm mb-5 border info-blue">
+            <div class="d-flex align-items-center mb-4">
                     <img src="../../assets/filtrer.png" alt="logo_filtrer" width="30" height="30" class="me-2">
-                    <h5 class="mb-0">Filtrer</h5>
+            <h5 class="mb-0 info-blue">Filtrer</h5>
                 </div>
-                <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="filterDepartement">
-                <label class="form-check-label" for="filterDepartement">Département</label>
+
+            <div class="row">
+                <div class="col-12 col-md-6 mb-3 info-blue">
+                    <label for="selectDepartement" class="form-label">Département</label>
+                    <select id="selectDepartement" class="form-select">
+                    <option selected disabled>Choisir une Département</option>
+                    <option>Loire-Atlantique</option>
+                    <option>Ain</option>
+                    <option>Alpes-de-Haute-Provence</option>
+                    <option>Autre</option>
+                    </select>
                 </div>
-                <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="filterAnInstallation">
-                <label class="form-check-label" for="filterAnInstallation">Année d'installation</label>
+
+                <div class="col-12 col-md-6 mb-3 info-blue">
+                    <label for="selectAnInstallation" class="form-label">Année d'installation</label>
+                    <select id="selectAnInstallation" class="form-select">
+                    <option selected disabled>Choisir une année d'installation</option>
+                    <option>2003</option>
+                    <option>2004</option>
+                    <option>2005</option>
+                    <option>Autre</option>
+                    </select>
                 </div>
             </div>
+        </form>
         </div>
         <div class="container my-3">
             <div class="bg-light p-4 rounded mb-5 border">

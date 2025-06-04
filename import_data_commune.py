@@ -60,6 +60,6 @@ with open('csv/communes-france-2024-limite.csv', newline='', encoding='utf-8') a
 conn.commit()
 cursor.close()
 conn.close()
-print("Import des communes terminé ✅")
+print("Import de communes.csv terminé ")
 
 

@@ -10,11 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       element.addEventListener("mouseenter", () => {
         console.log("Survol !");
-        element.style.transform = "scale(1.2)";
+        element.style.transform = "scale(1.1)";
+        element.style.backgroundColor = "Rgba(255, 255, 255, 0.5)";
       });
 
       element.addEventListener("mouseleave", () => {
         element.style.transform = "scale(1)";
+        element.style.backgroundColor = "Rgba(255, 255, 255)";
       }); 
     });
   } else {

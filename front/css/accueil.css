@@ -16,7 +16,10 @@ body {
   margin: 0;
   padding: 0;
 }
-
+.nav-link:hover{
+  color: #16a34a;
+  font-weight: bold;
+}
 /* 3. Le <main> prend toute la place restante */
 main {
   flex: 1;
@@ -64,4 +67,8 @@ main {
 /* 7. Couleur des petits textes (<small>) */
 small {
   color: #1e3a8a;
+}
+.carousel-inner img {
+  max-height: 300px;
+  object-fit: cover;
 }
