@@ -25,8 +25,9 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
             cursor.execute("INSERT INTO Installateur (nom_installateur) VALUES (%s)", (nom_installateur,))
             id_installateur = cursor.lastrowid
 
-        # MARQUE PANNEAU
+        # PANNEAU
         marque_panneau = row["panneaux_marque"].strip()
+        modele_panneau = row["panneaux_modele"].strip()
         cursor.execute("SELECT id_marque_panneau FROM Marque_panneau WHERE nom_marque = %s", (marque_panneau,))
         res = cursor.fetchone()
         if res:
@@ -35,8 +36,6 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
             cursor.execute("INSERT INTO Marque_panneau (nom_marque) VALUES (%s)", (marque_panneau,))
             id_marque_panneau = cursor.lastrowid
 
-        # MODELE PANNEAU 
-        modele_panneau = row["panneaux_modele"].strip()
         cursor.execute("SELECT id_modele_panneau FROM Modele_panneau WHERE nom_modele = %s", (modele_panneau,))
         res = cursor.fetchone()
         if res:
@@ -45,15 +44,12 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
             cursor.execute("INSERT INTO Modele_panneau (nom_modele) VALUES (%s)", (modele_panneau,))
             id_modele_panneau = cursor.lastrowid
 
-        # Insérer dans Panneau avec lien modèle et marque
-        cursor.execute(
-            "INSERT INTO Panneau (id_modele_panneau, id_marque_panneau) VALUES (%s, %s)",
-            (id_modele_panneau, id_marque_panneau)
-        )
+        cursor.execute("INSERT INTO Panneau (id_modele_panneau, id_marque_panneau) VALUES (%s, %s)", (id_modele_panneau, id_marque_panneau))
         id_panneau = cursor.lastrowid
 
-        # MARQUE ONDULEUR
+        # ONDULEUR
         marque_onduleur = row["onduleur_marque"].strip()
+        modele_onduleur = row["onduleur_modele"].strip()
         cursor.execute("SELECT id_marque_onduleur FROM Marque_onduleur WHERE nom_marque = %s", (marque_onduleur,))
         res = cursor.fetchone()
         if res:
@@ -62,8 +58,6 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
             cursor.execute("INSERT INTO Marque_onduleur (nom_marque) VALUES (%s)", (marque_onduleur,))
             id_marque_onduleur = cursor.lastrowid
 
-        # MODELE ONDULEUR
-        modele_onduleur = row["onduleur_modele"].strip()
         cursor.execute("SELECT id_modele_onduleur FROM Modele_onduleur WHERE nom_modele = %s", (modele_onduleur,))
         res = cursor.fetchone()
         if res:
@@ -72,11 +66,7 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
             cursor.execute("INSERT INTO Modele_onduleur (nom_modele) VALUES (%s)", (modele_onduleur,))
             id_modele_onduleur = cursor.lastrowid
 
-        # Insérer dans Onduleur avec lien modèle et marque
-        cursor.execute(
-            "INSERT INTO Onduleur (id_modele_onduleur, id_marque_onduleur) VALUES (%s, %s)",
-            (id_modele_onduleur, id_marque_onduleur)
-        )
+        cursor.execute("INSERT INTO Onduleur (id_modele_onduleur, id_marque_onduleur) VALUES (%s, %s)", (id_modele_onduleur, id_marque_onduleur))
         id_onduleur = cursor.lastrowid
 
         # INSTALLATION
@@ -84,10 +74,10 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
         an = int(row["an_installation"])
         nb_panneaux = int(row["nb_panneaux"])
         nb_onduleur = int(row["nb_onduleur"])
-        pente = float(row["pente"] or 0)
-        pente_optimum = float(row["pente_optimum"] or 0)
+        pente = int(row["pente"] or 0)
+        pente_optimum = int(row["pente_optimum"] or 0)
         orientation = row["orientation"].strip() or "Inconnu"
-        orientation_optimum = float(row["orientation_optimum"] or 0)
+        orientation_optimum = int(row["orientation_optimum"] or 0)
         surface = float(row["surface"] or 0)
         production = float(row["production_pvgis"] or 0)
         puissance = int(row["puissance_crete"] or 0)
@@ -109,10 +99,32 @@ with open("csv/data.csv", newline='', encoding="utf-8") as csvfile:
         # LOCALISATION
         lat = float(row["lat"])
         lon = float(row["lon"])
-        cursor.execute("INSERT INTO Localisation (lat, lon, id_installation) VALUES (%s, %s, %s)", (lat, lon, id_installation))
+
+        administrative_area_level_1 = row["administrative_area_level_1"].strip()
+        administrative_area_level_2 = row["administrative_area_level_2"].strip()
+
+        code_postal = row["postal_code"].strip()
+        cursor.execute("""
+            SELECT c.code_insee
+            FROM Commune c
+            JOIN Departement d ON c.dep_code = d.dep_code
+            JOIN Region r ON d.reg_code = r.reg_code
+            WHERE c.code_postal = %s AND d.dep_nom = %s AND r.reg_nom = %s
+            LIMIT 1
+        """, (code_postal,administrative_area_level_2, administrative_area_level_1))
+        res = cursor.fetchone()
+        code_insee = res[0] if res else None
+
+        cursor.execute("""
+            INSERT INTO Localisation (lat, lon, code_postal, code_insee)
+            VALUES (%s, %s, %s, %s)
+        """, (lat, lon, code_postal, code_insee))
+        id_localisation = cursor.lastrowid
+
+        # INSTALLER
+        cursor.execute("INSERT INTO Installer (id_localisation, id_installation) VALUES (%s, %s)", (id_localisation, id_installation))
 
 conn.commit()
 cursor.close()
 conn.close()
-
-print("✅ Import de `data.csv` terminé avec succès.")
+print(" Données de data.csv importées avec succès")

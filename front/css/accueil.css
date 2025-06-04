@@ -1,9 +1,28 @@
+/* accueil.css */
+
+/* 1. On s’assure que html et body font 100% en hauteur et n’ont pas de marges */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+/* 2. On applique le flex-col sur body pour coller le footer en bas */
 body {
   background-color: #e4e4e4;
   color: #000;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
 }
+
+/* 3. Le <main> prend toute la place restante */
+main {
+  flex: 1;
+}
+
+/* 4. Styles pour les info-box */
 .info-box {
   background-color: white;
   border-radius: 10px;
@@ -20,10 +39,12 @@ body {
 .info-green {
   color: #16a34a;
 }
+
 .info-blue {
   color: #1e3a8a;
 }
 
+/* 5. Styles pour les boutons personnalisés */
 .btn-custom {
   padding: 0.8rem 2rem;
   font-size: 1.1rem;
@@ -31,32 +52,16 @@ body {
   border-radius: 8px;
 }
 
-.footer-full {
-  background-color: #1e3a8a; 
-  color: white;
-  width: 100%;
-  padding: 0.75rem 2rem;
-  font-size: 0.9rem;
-}
-small{
-    color :#1e3a8a;
-}
-html, body {
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.container {
-  flex: 1;
-}
+/* 6. Footer : taille plein écran en largeur */
 .footer-full {
   width: 100%;
   background-color: #1e3a8a;
+  color: white;
+  padding: 0.75rem 2rem;
+  font-size: 0.9rem;
 }
 
+/* 7. Couleur des petits textes (<small>) */
+small {
+  color: #1e3a8a;
+}

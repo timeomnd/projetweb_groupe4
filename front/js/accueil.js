@@ -1,19 +1,23 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const mapImg = document.getElementById("map");
+  const mapElements = document.querySelectorAll(".map");
 
-  if (mapImg) {
-    console.log("JS chargé !");
+  if (mapElements.length > 0) {
+    console.log("JS chargé :", mapElements.length, "éléments trouvés");
 
-    mapImg.addEventListener("mouseenter", () => {
-      console.log("Survol !");
-      mapImg.style.transform = "scale(1.2)";
-      mapImg.style.transition = "transform 0.3s ease";
-    });
+    mapElements.forEach((element) => {
+      // Ajoute une transition une seule fois
+      element.style.transition = "transform 0.3s ease";
 
-    mapImg.addEventListener("mouseleave", () => {
-      mapImg.style.transform = "scale(1)";
+      element.addEventListener("mouseenter", () => {
+        console.log("Survol !");
+        element.style.transform = "scale(1.2)";
+      });
+
+      element.addEventListener("mouseleave", () => {
+        element.style.transform = "scale(1)";
+      }); 
     });
   } else {
-    console.warn("L'élément #map est introuvable !");
+    console.warn("Aucun élément avec la classe .map trouvé !");
   }
 });

@@ -67,6 +67,37 @@ CREATE TABLE Departement(
 
 
 #------------------------------------------------------------
+# Table: Commune
+#------------------------------------------------------------
+
+CREATE TABLE Commune(
+        code_insee   Int NOT NULL ,
+        nom_standard Varchar (100) NOT NULL ,
+        code_postal  Varchar (5) NOT NULL ,
+        population   Int NOT NULL ,
+        dep_code     Int NOT NULL
+	,CONSTRAINT Commune_PK PRIMARY KEY (code_insee)
+
+	,CONSTRAINT Commune_Departement_FK FOREIGN KEY (dep_code) REFERENCES Departement(dep_code)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
+# Table: Localisation
+#------------------------------------------------------------
+
+CREATE TABLE Localisation(
+        id_localisation Int  Auto_increment  NOT NULL ,
+        lat             Float NOT NULL ,
+        lon             Float NOT NULL ,
+        code_insee      Int NOT NULL
+	,CONSTRAINT Localisation_PK PRIMARY KEY (id_localisation)
+
+	,CONSTRAINT Localisation_Commune_FK FOREIGN KEY (code_insee) REFERENCES Commune(code_insee)
+)ENGINE=InnoDB;
+
+
+#------------------------------------------------------------
 # Table: Marque_onduleur
 #------------------------------------------------------------
 
@@ -126,51 +157,20 @@ CREATE TABLE Installation(
         nb_onduleur         Int NOT NULL ,
         pente               Int NOT NULL ,
         pente_optimum       Int NOT NULL ,
-        orientation         VARCHAR(100) NOT NULL ,
+        orientation         Varchar (100) NOT NULL ,
         orientation_optimum Int NOT NULL ,
         surface             Float NOT NULL ,
         production_pvgis    Float NOT NULL ,
         puissance_crete     Int NOT NULL ,
+        id_localisation     Int NOT NULL ,
         id_panneau          Int NOT NULL ,
         id_onduleur         Int NOT NULL ,
         id_installateur     Int
 	,CONSTRAINT Installation_PK PRIMARY KEY (id_installation)
 
-	,CONSTRAINT Installation_Panneau_FK FOREIGN KEY (id_panneau) REFERENCES Panneau(id_panneau)
-	,CONSTRAINT Installation_Onduleur0_FK FOREIGN KEY (id_onduleur) REFERENCES Onduleur(id_onduleur)
-	,CONSTRAINT Installation_Installateur1_FK FOREIGN KEY (id_installateur) REFERENCES Installateur(id_installateur)
-)ENGINE=InnoDB;
-
-
-#------------------------------------------------------------
-# Table: Localisation
-#------------------------------------------------------------
-
-CREATE TABLE Localisation(
-        id_localisation Int  Auto_increment  NOT NULL ,
-        lat             Float NOT NULL ,
-        lon             Float NOT NULL ,
-        id_installation Int NOT NULL
-	,CONSTRAINT Localisation_PK PRIMARY KEY (id_localisation)
-
-	,CONSTRAINT Localisation_Installation_FK FOREIGN KEY (id_installation) REFERENCES Installation(id_installation)
-)ENGINE=InnoDB;
-
-
-#------------------------------------------------------------
-# Table: Commune
-#------------------------------------------------------------
-
-CREATE TABLE Commune(
-        code_insee      Int NOT NULL ,
-        nom_standard    Varchar (100) NOT NULL ,
-        code_postal     Int NOT NULL ,
-        population      Int NOT NULL ,
-        id_localisation Int NOT NULL ,
-        dep_code        Int NOT NULL
-	,CONSTRAINT Commune_PK PRIMARY KEY (code_insee)
-
-	,CONSTRAINT Commune_Localisation_FK FOREIGN KEY (id_localisation) REFERENCES Localisation(id_localisation)
-	,CONSTRAINT Commune_Departement0_FK FOREIGN KEY (dep_code) REFERENCES Departement(dep_code)
+	,CONSTRAINT Installation_Localisation_FK FOREIGN KEY (id_localisation) REFERENCES Localisation(id_localisation)
+	,CONSTRAINT Installation_Panneau0_FK FOREIGN KEY (id_panneau) REFERENCES Panneau(id_panneau)
+	,CONSTRAINT Installation_Onduleur1_FK FOREIGN KEY (id_onduleur) REFERENCES Onduleur(id_onduleur)
+	,CONSTRAINT Installation_Installateur2_FK FOREIGN KEY (id_installateur) REFERENCES Installateur(id_installateur)
 )ENGINE=InnoDB;
 

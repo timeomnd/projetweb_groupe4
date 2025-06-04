@@ -1,0 +1,43 @@
+
+  /* Footer full width en bas de page */
+  .footer-full {
+    background-color:#1e3a8a;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+  }
+
+  /* Centrage de la recherche */
+  .search-bar {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .search-bar input {
+    border: 2px solid #1e3a8a;
+    color: #1e3a8a;
+  }
+
+  .search-bar input::placeholder {
+    color: #1e3a8a;
+    opacity: 0.6;
+  }
+.form-check-input {
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 0.25em;
+  border: 2px solid #1e3a8a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-check-input:checked {
+  background-color: #1e3a8a;
+  border-color: #1e3a8a;
+}
+
+.blue{
+    background-color:#1e3a8a;
+}
