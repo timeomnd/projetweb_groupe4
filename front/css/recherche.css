@@ -40,3 +40,8 @@
 .blue{
     background-color:#1e3a8a;
 }
+.blue:hover {
+  background-color: #16a34a; /* vert */
+  color: white; /* garde le texte blanc au survol */
+  border-color: #16a34a;
+}

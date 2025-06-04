@@ -1,5 +1,3 @@
 <?php
-echo "hi";
-echo "hello";
-e
+echo "NONON";
 ?>

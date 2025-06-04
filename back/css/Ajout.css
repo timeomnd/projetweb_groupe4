@@ -1,16 +1,45 @@
-.form-check-input {
-  width: 1.2em;
-  height: 1.2em;
-  border-radius: 0.25em;
-  border: 2px solid #1e3a8a;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+body {
+      background: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-.form-check-input:checked {
-  background-color: #1e3a8a;
-  border-color: #1e3a8a;
-}
-.blue{
-    background-color:#1e3a8a;
-}
+    .form-container {
+      max-width: 600px;
+      margin: 50px auto;
+    }
+
+    .form-card {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+      color: #1e3a8a;
+    }
+
+    .footer-full {
+      width: 100%;
+      background-color: #1e3a8a;
+      color: white;
+      padding: 0.75rem 2rem;
+      font-size: 0.9rem;
+    }
+
+    label {
+      font-weight: bold;
+    }
+    .info-blue {
+      color: #1e3a8a;
+    }
+    .blue{
+      background-color: #1e3a8a;
+    }
+    .blue:hover {
+      background-color: #16a34a; /* vert */
+      color: white; /* garde le texte blanc au survol */
+      border-color: #16a34a;
+    }

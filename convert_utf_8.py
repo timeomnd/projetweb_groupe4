@@ -1,15 +1,18 @@
-# convert_to_utf8.py
+import csv
+from ftfy import fix_text
 
-import shutil
+# Fichier d'origine et fichier de sortie
+input_file = "csv/data.csv"
+output_file = "csv/data_corrige.csv"
 
-input_file = "csv/data.csv"                # ton fichier d'origine (avec accents buggés)
-output_file = "csv/data_utf8.csv"          # nouveau fichier encodé en UTF-8
+with open(input_file, mode='r', encoding='utf-8', newline='') as infile, \
+     open(output_file, mode='w', encoding='utf-8', newline='') as outfile:
 
-# encodage d'origine probable : ISO-8859-1 (ou cp1252 selon Windows)
-original_encoding = "cp1252"
+    reader = csv.reader(infile)
+    writer = csv.writer(outfile)
 
-with open(input_file, "r", encoding=original_encoding, errors="replace") as source:
-    with open(output_file, "w", encoding="utf-8") as target:
-        shutil.copyfileobj(source, target)
+    for row in reader:
+        corrected_row = [fix_text(cell) for cell in row]
+        writer.writerow(corrected_row)
 
-print(f"✅ Conversion terminée → {output_file} (UTF-8 propre avec accents)")
+print("✅ Fichier corrigé avec succès : data_corrige.csv")
