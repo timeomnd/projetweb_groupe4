@@ -3,7 +3,7 @@ include "constants.php";
 
 // Connexion à la base de données
 function dbConnect(){
-    $dsn = 'pgsql:dbname=' . DB_NAME . ';host=' . DB_SERVER;   
+    $dsn = 'mysql:dbname=' . DB_NAME . ';host=' . DB_SERVER;   
     try {
         $conn = new PDO($dsn, DB_USER, DB_PASSWORD);
     } catch (PDOException $e) {
@@ -12,4 +12,6 @@ function dbConnect(){
     }
     return $conn;
 }
+
+
 ?>

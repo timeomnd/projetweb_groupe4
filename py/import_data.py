@@ -2,6 +2,10 @@
 import csv
 import mysql.connector
 
+#Pour le ficher data.csv, nous faisons les requêtes SQL directement avec le script Python car il est plus simple de gérér les id autoincrementés avec cursor.lastrowid
+#Le faire en requêtes SQL serait plus complexe et moins lisible
+# Le traitement direct avec Python est plus adapté ici, car il évite les ambigüités liées aux sous-requêtes SQL multiples et permet un meilleur contrôle de l'intégrité des données. 
+
 # Chargement du fichier villecodeinseemap.txt
 def load_ville_to_insee_map(filepath="villecodeinseemap.txt"):
     mapping = {}
@@ -63,7 +67,7 @@ def get_or_create_onduleur(cursor, marque, modele):
 def get_or_create_localisation(cursor, lat, lon, nom_commune, ville_map):
     code_insee = ville_map.get(nom_commune.strip())
     if not code_insee:
-        # print(f"[⚠] Commune introuvable : '{nom_commune}'")
+        print(f"[⚠] Commune introuvable : '{nom_commune}'")
         return None
     else:
         print(f"[✔] Commune trouvée : '{nom_commune}' avec code INSEE {code_insee}")

@@ -1,0 +1,8 @@
+RewriteEngine On
+RewriteBase /back/
+
+# Si le fichier ou dossier demandé n'existe pas, rediriger vers api.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ api.php?request=$1 [QSA,L]
+
