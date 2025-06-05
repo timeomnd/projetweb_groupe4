@@ -2,6 +2,16 @@
 import csv
 import mysql.connector
 
+# Chargement du fichier villecodeinseemap.txt
+def load_ville_to_insee_map(filepath="villecodeinseemap.txt"):
+    mapping = {}
+    with open(filepath, "r", encoding="utf-8") as f:
+        for line in f:
+            if '=' in line:
+                nom, code = line.strip().split('=', 1)
+                mapping[nom.strip()] = code.strip()
+    return mapping
+
 def get_or_create_installateur(cursor, nom):
     cursor.execute("SELECT id_installateur FROM Installateur WHERE nom_installateur = %s", (nom,))
     res = cursor.fetchone()
@@ -50,19 +60,14 @@ def get_or_create_onduleur(cursor, marque, modele):
     cursor.execute("INSERT INTO Onduleur (id_modele_onduleur, id_marque_onduleur) VALUES (%s, %s)", (id_modele, id_marque))
     return cursor.lastrowid
 
-def get_or_create_localisation(cursor, lat, lon, code_postal, dep_nom, reg_nom):
-    cursor.execute("""
-        SELECT c.code_insee
-        FROM Commune c
-        JOIN Departement d ON c.dep_code = d.dep_code
-        JOIN Region r ON d.reg_code = r.reg_code
-        WHERE c.code_postal = %s AND d.dep_nom = %s AND r.reg_nom = %s
-    """, (code_postal, dep_nom, reg_nom))
-    res = cursor.fetchone()
-    if not res:
-        print(f"[⚠] Commune introuvable → {code_postal}, {dep_nom}, {reg_nom}")
+def get_or_create_localisation(cursor, lat, lon, nom_commune, ville_map):
+    code_insee = ville_map.get(nom_commune.strip())
+    if not code_insee:
+        # print(f"[⚠] Commune introuvable : '{nom_commune}'")
         return None
-    code_insee = res[0]
+    else:
+        print(f"[✔] Commune trouvée : '{nom_commune}' avec code INSEE {code_insee}")
+
     cursor.execute("INSERT INTO Localisation (lat, lon, code_insee) VALUES (%s, %s, %s)", (lat, lon, code_insee))
     return cursor.lastrowid
 
@@ -93,6 +98,9 @@ conn = mysql.connector.connect(
 )
 cursor = conn.cursor(buffered=True)
 
+# Chargement de la map ville → code_insee
+ville_map = load_ville_to_insee_map()
+
 # Lecture CSV
 with open("csv/data_corrige.csv", newline='', encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
@@ -100,9 +108,9 @@ with open("csv/data_corrige.csv", newline='', encoding="utf-8") as csvfile:
         id_installateur = get_or_create_installateur(cursor, row["installateur"].strip())
         id_panneau = get_or_create_panneau(cursor, row["panneaux_marque"].strip(), row["panneaux_modele"].strip())
         id_onduleur = get_or_create_onduleur(cursor, row["onduleur_marque"].strip(), row["onduleur_modele"].strip())
+        nom_commune = row["locality"].strip()
         id_localisation = get_or_create_localisation(
-            cursor, float(row["lat"]), float(row["lon"]), row["postal_code"],
-            row["administrative_area_level_2"], row["administrative_area_level_1"]
+            cursor, float(row["lat"]), float(row["lon"]), nom_commune, ville_map
         )
         if id_localisation:
             insert_installation(cursor, row, id_localisation, id_panneau, id_onduleur, id_installateur)

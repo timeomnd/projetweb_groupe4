@@ -71,9 +71,9 @@ CREATE TABLE Departement(
 #------------------------------------------------------------
 
 CREATE TABLE Commune(
-        code_insee   Int NOT NULL ,
+        code_insee   Varchar (100) NOT NULL ,
         nom_standard Varchar (100) NOT NULL ,
-        code_postal  Varchar (5) NOT NULL ,
+        code_postal  Varchar (10) NOT NULL ,
         population   Int NOT NULL ,
         dep_code     Int NOT NULL
 	,CONSTRAINT Commune_PK PRIMARY KEY (code_insee)
@@ -90,7 +90,7 @@ CREATE TABLE Localisation(
         id_localisation Int  Auto_increment  NOT NULL ,
         lat             Float NOT NULL ,
         lon             Float NOT NULL ,
-        code_insee      Int NOT NULL
+        code_insee      Varchar (100) NOT NULL
 	,CONSTRAINT Localisation_PK PRIMARY KEY (id_localisation)
 
 	,CONSTRAINT Localisation_Commune_FK FOREIGN KEY (code_insee) REFERENCES Commune(code_insee)
@@ -160,7 +160,7 @@ CREATE TABLE Installation(
         orientation         Varchar (100) NOT NULL ,
         orientation_optimum Int NOT NULL ,
         surface             Float NOT NULL ,
-        production_pvgis    Float NOT NULL ,
+        production_pvgis    Int NOT NULL ,
         puissance_crete     Int NOT NULL ,
         id_localisation     Int NOT NULL ,
         id_panneau          Int NOT NULL ,

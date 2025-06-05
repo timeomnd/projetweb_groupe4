@@ -27,15 +27,15 @@ with open('csv/communes-france-2024-limite.csv', newline='', encoding='utf-8') a
 
     for row in reader:
         reg_code = row['reg_code']
-        reg_nom = row['reg_nom']
+        reg_nom = row['reg_nom'].strip()
         dep_code = row['dep_code']
-        dep_nom = row['dep_nom']
+        dep_nom = row['dep_nom'].strip()
         code_insee = row['code_insee']
-        nom_commune = row['nom_standard']
-        code_postal = row['code_postal']
+        nom_commune = row['nom_standard'].strip()
+        code_postal = row['code_postal'].strip
         population = int(row['population']) if row['population'] else 0
 
-        # 1. Insertion région
+        # 1. Insertion région   
         if reg_code not in regions_deja_inseres:
             cursor.execute("""
                 INSERT IGNORE INTO Region (reg_code, reg_nom)

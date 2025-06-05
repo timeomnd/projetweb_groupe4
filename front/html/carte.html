@@ -31,38 +31,45 @@
   </nav>
         <div class="container my-5">
             <!-- Filtres -->
-             <form>
-            <div class="bg-white p-4 rounded shadow-sm mb-5 border info-blue">
-            <div class="d-flex align-items-center mb-4">
+            <form method="GET" action="ton_script.php">
+                <div class="bg-white p-4 rounded shadow-sm mb-5 border info-blue">
+                <div class="d-flex align-items-center mb-4">
                     <img src="../../assets/filtrer.png" alt="logo_filtrer" width="30" height="30" class="me-2">
-            <h5 class="mb-0 info-blue">Filtrer</h5>
+                    <h5 class="mb-0 info-blue">Filtrer</h5>
                 </div>
 
-            <div class="row">
-                <div class="col-12 col-md-6 mb-3 info-blue">
+                <div class="row">
+                    <!-- Département -->
+                    <div class="col-12 col-md-6 mb-3 info-blue">
                     <label for="selectDepartement" class="form-label">Département</label>
-                    <select id="selectDepartement" class="form-select">
-                    <option selected disabled>Choisir une Département</option>
-                    <option>Loire-Atlantique</option>
-                    <option>Ain</option>
-                    <option>Alpes-de-Haute-Provence</option>
-                    <option>Autre</option>
+                    <select id="selectDepartement" name="departements[]" class="form-select" multiple>
+                        <option>Loire-Atlantique</option>
+                        <option>Ain</option>
+                        <option>Alpes-de-Haute-Provence</option>
+                        <option>Autre</option>
                     </select>
+                    </div>
+
+                    <!-- Année d'installation -->
+                    <div class="col-12 col-md-6 mb-3 info-blue">
+                    <label for="selectAnInstallation" class="form-label">Année d'installation</label>
+                    <select id="selectAnInstallation" name="annees_installation[]" class="form-select" multiple>
+                        <option>2003</option>
+                        <option>2004</option>
+                        <option>2005</option>
+                        <option>Autre</option>
+                    </select>
+                    </div>
+                </div>
                 </div>
 
-                <div class="col-12 col-md-6 mb-3 info-blue">
-                    <label for="selectAnInstallation" class="form-label">Année d'installation</label>
-                    <select id="selectAnInstallation" class="form-select">
-                    <option selected disabled>Choisir une année d'installation</option>
-                    <option>2003</option>
-                    <option>2004</option>
-                    <option>2005</option>
-                    <option>Autre</option>
-                    </select>
+                <!-- Bouton Rechercher -->
+                <div class="text-center mb-5 info-blue">
+                <button type="submit" class="btn btn-primary btn-lg px-5 blue">Rechercher</button>
                 </div>
-            </div>
-        </form>
+            </form>
         </div>
+
         <div class="container my-3">
             <div class="bg-light p-4 rounded mb-5 border">
                 <div class="text-center mb-4">
@@ -70,7 +77,8 @@
                     <br><h5 class="fw-bold">Visualisez les installations répertoriées sur la carte :</h5><br>
                 <div id="map" style="height: 500px;"></div>
             </div>
-        </div>        
+        </div>
+    </div>        
     <!-- Footer plein écran -->
     <footer class="footer-full text-white d-flex justify-content-between align-items-center px-4 py-3">
         <span>Projet CIR2 - 2025 - Groupe 4</span>

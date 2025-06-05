@@ -1,14 +1,4 @@
-/* Footer full width en bas de page /
-  .footer-full {
-    background-color:#1e3a8a;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-  }
 
-  / Centrage de la recherche */
   .search-bar {
     max-width: 600px;
     margin: 0 auto;
