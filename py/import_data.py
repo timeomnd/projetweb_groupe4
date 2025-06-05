@@ -17,7 +17,7 @@ def load_ville_to_insee_map(filepath="villecodeinseemap.txt"):
     return mapping
 
 def get_or_create_installateur(cursor, nom):
-    cursor.execute("SELECT id_installateur FROM Installateur WHERE nom_installateur = %s", (nom,))
+    cursor.execute("SELECT id FROM Installateur WHERE nom_installateur = %s", (nom,))
     res = cursor.fetchone()
     if res:
         return res[0]
@@ -25,7 +25,7 @@ def get_or_create_installateur(cursor, nom):
     return cursor.lastrowid
 
 def get_or_create_panneau(cursor, marque, modele):
-    cursor.execute("SELECT id_marque_panneau FROM Marque_panneau WHERE nom_marque = %s", (marque,))
+    cursor.execute("SELECT id FROM Marque_panneau WHERE nom_marque = %s", (marque,))
     res = cursor.fetchone()
     if res:
         id_marque = res[0]
@@ -33,7 +33,7 @@ def get_or_create_panneau(cursor, marque, modele):
         cursor.execute("INSERT INTO Marque_panneau (nom_marque) VALUES (%s)", (marque,))
         id_marque = cursor.lastrowid
 
-    cursor.execute("SELECT id_modele_panneau FROM Modele_panneau WHERE nom_modele = %s", (modele,))
+    cursor.execute("SELECT id FROM Modele_panneau WHERE nom_modele = %s", (modele,))
     res = cursor.fetchone()
     if res:
         id_modele = res[0]
@@ -41,11 +41,11 @@ def get_or_create_panneau(cursor, marque, modele):
         cursor.execute("INSERT INTO Modele_panneau (nom_modele) VALUES (%s)", (modele,))
         id_modele = cursor.lastrowid
 
-    cursor.execute("INSERT INTO Panneau (id_modele_panneau, id_marque_panneau) VALUES (%s, %s)", (id_modele, id_marque))
+    cursor.execute("INSERT INTO Panneau (id_Modele_panneau, id_Marque_panneau) VALUES (%s, %s)", (id_modele, id_marque))
     return cursor.lastrowid
 
 def get_or_create_onduleur(cursor, marque, modele):
-    cursor.execute("SELECT id_marque_onduleur FROM Marque_onduleur WHERE nom_marque = %s", (marque,))
+    cursor.execute("SELECT id FROM Marque_onduleur WHERE nom_marque = %s", (marque,))
     res = cursor.fetchone()
     if res:
         id_marque = res[0]
@@ -53,7 +53,7 @@ def get_or_create_onduleur(cursor, marque, modele):
         cursor.execute("INSERT INTO Marque_onduleur (nom_marque) VALUES (%s)", (marque,))
         id_marque = cursor.lastrowid
 
-    cursor.execute("SELECT id_modele_onduleur FROM Modele_onduleur WHERE nom_modele = %s", (modele,))
+    cursor.execute("SELECT id FROM Modele_onduleur WHERE nom_modele = %s", (modele,))
     res = cursor.fetchone()
     if res:
         id_modele = res[0]
@@ -61,7 +61,7 @@ def get_or_create_onduleur(cursor, marque, modele):
         cursor.execute("INSERT INTO Modele_onduleur (nom_modele) VALUES (%s)", (modele,))
         id_modele = cursor.lastrowid
 
-    cursor.execute("INSERT INTO Onduleur (id_modele_onduleur, id_marque_onduleur) VALUES (%s, %s)", (id_modele, id_marque))
+    cursor.execute("INSERT INTO Onduleur (id_Modele_onduleur, id_Marque_onduleur) VALUES (%s, %s)", (id_modele, id_marque))
     return cursor.lastrowid
 
 def get_or_create_localisation(cursor, lat, lon, nom_commune, ville_map):
@@ -72,7 +72,7 @@ def get_or_create_localisation(cursor, lat, lon, nom_commune, ville_map):
     else:
         print(f"[✔] Commune trouvée : '{nom_commune}' avec code INSEE {code_insee}")
 
-    cursor.execute("INSERT INTO Localisation (lat, lon, code_insee) VALUES (%s, %s, %s)", (lat, lon, code_insee))
+    cursor.execute("INSERT INTO Localisation (lat, lon, id_Commune) VALUES (%s, %s, %s)", (lat, lon, code_insee))
     return cursor.lastrowid
 
 def insert_installation(cursor, row, id_localisation, id_panneau, id_onduleur, id_installateur):
@@ -81,7 +81,7 @@ def insert_installation(cursor, row, id_localisation, id_panneau, id_onduleur, i
             mois_installation, an_installation, nb_panneaux, nb_onduleur,
             pente, pente_optimum, orientation, orientation_optimum,
             surface, production_pvgis, puissance_crete,
-            id_localisation, id_panneau, id_onduleur, id_installateur
+            id_Localisation, id_Panneau, id_Onduleur, id_Installateur
         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """, (
         int(row["mois_installation"]), int(row["an_installation"]),
@@ -106,7 +106,7 @@ cursor = conn.cursor(buffered=True)
 ville_map = load_ville_to_insee_map()
 
 # Lecture CSV
-with open("csv/data_corrige.csv", newline='', encoding="utf-8") as csvfile:
+with open("../csv/data_corrige.csv", newline='', encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
     for row in reader:
         id_installateur = get_or_create_installateur(cursor, row["installateur"].strip())
