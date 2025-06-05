@@ -40,3 +40,7 @@
 .blue{
     background-color:#1e3a8a;
 }
+.nav-link:hover{
+  color: #16a34a;
+  font-weight: bold;
+}

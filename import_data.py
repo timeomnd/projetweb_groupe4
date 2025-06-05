@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import csv
-import mysql.connector
 
 # Chargement du fichier villecodeinseemap.txt
 def load_ville_to_insee_map(filepath="villecodeinseemap.txt"):
@@ -12,110 +11,109 @@ def load_ville_to_insee_map(filepath="villecodeinseemap.txt"):
                 mapping[nom.strip()] = code.strip()
     return mapping
 
-def get_or_create_installateur(cursor, nom):
-    cursor.execute("SELECT id_installateur FROM Installateur WHERE nom_installateur = %s", (nom,))
-    res = cursor.fetchone()
-    if res:
-        return res[0]
-    cursor.execute("INSERT INTO Installateur (nom_installateur) VALUES (%s)", (nom,))
-    return cursor.lastrowid
+# Écriture dans le fichier SQL
+sql_file = open("sql/data.sql", "w", encoding="utf-8")
 
-def get_or_create_panneau(cursor, marque, modele):
-    cursor.execute("SELECT id_marque_panneau FROM Marque_panneau WHERE nom_marque = %s", (marque,))
-    res = cursor.fetchone()
-    if res:
-        id_marque = res[0]
-    else:
-        cursor.execute("INSERT INTO Marque_panneau (nom_marque) VALUES (%s)", (marque,))
-        id_marque = cursor.lastrowid
+# Buffers de déduplication
+installateurs = {}
+panneaux = {}
+onduleurs = {}
+modele_panneaux = {}
+modele_onduleurs = {}
+marque_panneaux = {}
+marque_onduleurs = {}
+localisations = set()
 
-    cursor.execute("SELECT id_modele_panneau FROM Modele_panneau WHERE nom_modele = %s", (modele,))
-    res = cursor.fetchone()
-    if res:
-        id_modele = res[0]
-    else:
-        cursor.execute("INSERT INTO Modele_panneau (nom_modele) VALUES (%s)", (modele,))
-        id_modele = cursor.lastrowid
+def escape(val):
+    return val.replace("'", "''")
 
-    cursor.execute("INSERT INTO Panneau (id_modele_panneau, id_marque_panneau) VALUES (%s, %s)", (id_modele, id_marque))
-    return cursor.lastrowid
+def write(query, params):
+    for p in params:
+        if isinstance(p, str):
+            query = query.replace("%s", f"'{escape(p)}'", 1)
+        else:
+            query = query.replace("%s", str(p), 1)
+    sql_file.write(query.strip() + ";\n")
 
-def get_or_create_onduleur(cursor, marque, modele):
-    cursor.execute("SELECT id_marque_onduleur FROM Marque_onduleur WHERE nom_marque = %s", (marque,))
-    res = cursor.fetchone()
-    if res:
-        id_marque = res[0]
-    else:
-        cursor.execute("INSERT INTO Marque_onduleur (nom_marque) VALUES (%s)", (marque,))
-        id_marque = cursor.lastrowid
-
-    cursor.execute("SELECT id_modele_onduleur FROM Modele_onduleur WHERE nom_modele = %s", (modele,))
-    res = cursor.fetchone()
-    if res:
-        id_modele = res[0]
-    else:
-        cursor.execute("INSERT INTO Modele_onduleur (nom_modele) VALUES (%s)", (modele,))
-        id_modele = cursor.lastrowid
-
-    cursor.execute("INSERT INTO Onduleur (id_modele_onduleur, id_marque_onduleur) VALUES (%s, %s)", (id_modele, id_marque))
-    return cursor.lastrowid
-
-def get_or_create_localisation(cursor, lat, lon, nom_commune, ville_map):
-    code_insee = ville_map.get(nom_commune.strip())
-    if not code_insee:
-        # print(f"[⚠] Commune introuvable : '{nom_commune}'")
-        return None
-    else:
-        print(f"[✔] Commune trouvée : '{nom_commune}' avec code INSEE {code_insee}")
-
-    cursor.execute("INSERT INTO Localisation (lat, lon, code_insee) VALUES (%s, %s, %s)", (lat, lon, code_insee))
-    return cursor.lastrowid
-
-def insert_installation(cursor, row, id_localisation, id_panneau, id_onduleur, id_installateur):
-    cursor.execute("""
-        INSERT INTO Installation (
-            mois_installation, an_installation, nb_panneaux, nb_onduleur,
-            pente, pente_optimum, orientation, orientation_optimum,
-            surface, production_pvgis, puissance_crete,
-            id_localisation, id_panneau, id_onduleur, id_installateur
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """, (
-        int(row["mois_installation"]), int(row["an_installation"]),
-        int(row["nb_panneaux"]), int(row["nb_onduleur"]),
-        int(row["pente"] or 0), int(row["pente_optimum"] or 0),
-        row["orientation"].strip() or "Inconnu", int(row["orientation_optimum"] or 0),
-        float(row["surface"] or 0), float(row["production_pvgis"] or 0),
-        int(row["puissance_crete"] or 0),
-        id_localisation, id_panneau, id_onduleur, id_installateur
-    ))
-
-# Connexion
-conn = mysql.connector.connect(
-    host='localhost',
-    user='projetwebCIR2',
-    password='isen44',
-    database='ENERGISEN'
-)
-cursor = conn.cursor(buffered=True)
-
-# Chargement de la map ville → code_insee
+# Lecture du mapping ville → code_insee
 ville_map = load_ville_to_insee_map()
 
 # Lecture CSV
 with open("csv/data_corrige.csv", newline='', encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
     for row in reader:
-        id_installateur = get_or_create_installateur(cursor, row["installateur"].strip())
-        id_panneau = get_or_create_panneau(cursor, row["panneaux_marque"].strip(), row["panneaux_modele"].strip())
-        id_onduleur = get_or_create_onduleur(cursor, row["onduleur_marque"].strip(), row["onduleur_modele"].strip())
-        nom_commune = row["locality"].strip()
-        id_localisation = get_or_create_localisation(
-            cursor, float(row["lat"]), float(row["lon"]), nom_commune, ville_map
-        )
-        if id_localisation:
-            insert_installation(cursor, row, id_localisation, id_panneau, id_onduleur, id_installateur)
+        # Installateur
+        nom_installateur = row["installateur"].strip()
+        if nom_installateur not in installateurs:
+            write("INSERT INTO Installateur (nom_installateur) VALUES (%s)", [nom_installateur])
+            installateurs[nom_installateur] = True
 
-conn.commit()
-cursor.close()
-conn.close()
-print("✅ Données importées avec succès dans toutes les tables.")
+        # Marque + Modèle panneau
+        marque_p = row["panneaux_marque"].strip()
+        modele_p = row["panneaux_modele"].strip()
+        if marque_p not in marque_panneaux:
+            write("INSERT INTO Marque_panneau (nom_marque) VALUES (%s)", [marque_p])
+            marque_panneaux[marque_p] = True
+        if modele_p not in modele_panneaux:
+            write("INSERT INTO Modele_panneau (nom_modele) VALUES (%s)", [modele_p])
+            modele_panneaux[modele_p] = True
+        if (modele_p, marque_p) not in panneaux:
+            write("INSERT INTO Panneau (id_modele_panneau, id_marque_panneau) VALUES ((SELECT id_modele_panneau FROM Modele_panneau WHERE nom_modele = %s), (SELECT id_marque_panneau FROM Marque_panneau WHERE nom_marque = %s))", [modele_p, marque_p])
+            panneaux[(modele_p, marque_p)] = True
+
+        # Marque + Modèle onduleur
+        marque_o = row["onduleur_marque"].strip()
+        modele_o = row["onduleur_modele"].strip()
+        if marque_o not in marque_onduleurs:
+            write("INSERT INTO Marque_onduleur (nom_marque) VALUES (%s)", [marque_o])
+            marque_onduleurs[marque_o] = True
+        if modele_o not in modele_onduleurs:
+            write("INSERT INTO Modele_onduleur (nom_modele) VALUES (%s)", [modele_o])
+            modele_onduleurs[modele_o] = True
+        if (modele_o, marque_o) not in onduleurs:
+            write("INSERT INTO Onduleur (id_modele_onduleur, id_marque_onduleur) VALUES ((SELECT id_modele_onduleur FROM Modele_onduleur WHERE nom_modele = %s), (SELECT id_marque_onduleur FROM Marque_onduleur WHERE nom_marque = %s))", [modele_o, marque_o])
+            onduleurs[(modele_o, marque_o)] = True
+
+        # Localisation
+        lat = float(row["lat"])
+        lon = float(row["lon"])
+        nom_commune = row["locality"].strip()
+        code_insee = ville_map.get(nom_commune)
+        if not code_insee:
+            continue  # commune inconnue → ignorer
+        localisation_key = (lat, lon, code_insee)
+        if localisation_key not in localisations:
+            write("INSERT INTO Localisation (lat, lon, code_insee) VALUES (%s, %s, %s)", [lat, lon, code_insee])
+            localisations.add(localisation_key)
+
+        # Installation
+        write("""
+            INSERT INTO Installation (
+                mois_installation, an_installation, nb_panneaux, nb_onduleur,
+                pente, pente_optimum, orientation, orientation_optimum,
+                surface, production_pvgis, puissance_crete,
+                id_localisation, id_panneau, id_onduleur, id_installateur
+            ) VALUES (
+                %s, %s, %s, %s,
+                %s, %s, %s, %s,
+                %s, %s, %s,
+                (SELECT id_localisation FROM Localisation WHERE lat = %s AND lon = %s AND code_insee = %s),
+                (SELECT id_panneau FROM Panneau INNER JOIN Modele_panneau USING(id_modele_panneau) INNER JOIN Marque_panneau USING(id_marque_panneau) WHERE nom_modele = %s AND nom_marque = %s),
+                (SELECT id_onduleur FROM Onduleur INNER JOIN Modele_onduleur USING(id_modele_onduleur) INNER JOIN Marque_onduleur USING(id_marque_onduleur) WHERE nom_modele = %s AND nom_marque = %s),
+                (SELECT id_installateur FROM Installateur WHERE nom_installateur = %s)
+            )
+        """, [
+            int(row["mois_installation"]), int(row["an_installation"]),
+            int(row["nb_panneaux"]), int(row["nb_onduleur"]),
+            int(row["pente"] or 0), int(row["pente_optimum"] or 0),
+            row["orientation"].strip() or "Inconnu", int(row["orientation_optimum"] or 0),
+            float(row["surface"] or 0), float(row["production_pvgis"] or 0),
+            int(row["puissance_crete"] or 0),
+            lat, lon, code_insee,
+            modele_p, marque_p,
+            modele_o, marque_o,
+            nom_installateur
+        ])
+
+sql_file.close()
+print("✅ Fichier data.sql généré avec succès.")

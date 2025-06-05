@@ -28,10 +28,6 @@ body {
       padding: 0.75rem 2rem;
       font-size: 0.9rem;
     }
-
-    label {
-      font-weight: bold;
-    }
     .info-blue {
       color: #1e3a8a;
     }
@@ -42,4 +38,11 @@ body {
       background-color: #16a34a; /* vert */
       color: white; /* garde le texte blanc au survol */
       border-color: #16a34a;
+    }
+    .nav-link:hover{
+      color: #16a34a;
+      font-weight: bold;
+    }
+    .form-label{
+      font-weight: bold;
     }

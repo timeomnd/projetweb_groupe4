@@ -1,7 +1,7 @@
 h1 {
       text-align: center;
       margin: 40px 0 20px;
-      color: #0d6efd;
+      color: #1e3a8a;
     }
     .table-container {
       max-width: 95%;
@@ -18,4 +18,8 @@ h1 {
     footer{
         position: fixed;
         bottom: 0;
+    }
+    .nav-link:hover{
+      color: #16a34a;
+      font-weight: bold;
     }
