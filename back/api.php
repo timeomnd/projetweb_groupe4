@@ -45,12 +45,42 @@ if (!$table || !in_array($table, $allowedTables)) {
     sendJsonData(['error' => 'Table non autorisée ou non spécifiée'], 403);
 }
 
-// Fonctions génériques
 function fetchAll($db, $table) {
-    $stmt = $db->prepare("SELECT * FROM `$table`");
+    // Si count=true est présent, on renvoie le nombre d'enregistrements (avec filtres possibles)
+    if (isset($_GET['count']) && $_GET['count'] === 'true') {
+        $where = '';
+        $params = [];
+
+        // On ajoute des clauses WHERE pour tous les autres paramètres GET
+        foreach ($_GET as $key => $value) {
+            if ($key !== 'count' && $key !== 'random' && $key !== 'limit') {
+                $where .= ($where ? ' AND ' : 'WHERE ') . "`$key` = ?";
+                $params[] = $value;
+            }
+        }
+
+        $stmt = $db->prepare("SELECT COUNT(*) AS count FROM `$table` $where");
+        $stmt->execute($params);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Sinon, requête classique
+    $query = "SELECT * FROM `$table`";
+    //requête pour randomiser le résultat de la recherche
+    if (isset($_GET['random']) && $_GET['random'] === 'true') {
+        $query .= " ORDER BY RAND()";
+    }
+    // requête pour limiter le nombre de résultats
+    if (isset($_GET['limit']) && is_numeric($_GET['limit'])) {
+        $query .= " LIMIT " . intval($_GET['limit']);
+    }
+
+    $stmt = $db->prepare($query);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
 
 function fetchOne($db, $table, $id) {
     $stmt = $db->prepare("SELECT * FROM `$table` WHERE id = ?");
@@ -89,22 +119,6 @@ function updateOne($db, $table, $id, $data) {
 try {
     switch ($method) {
         case 'GET':
-            if (isset($_GET['count']) && $_GET['count'] === 'true') {
-                // Optionnel : filtrage personnalisé
-                $where = '';
-                $params = [];
-
-                foreach ($_GET as $key => $value) {
-                    if ($key !== 'count') {
-                        $where .= ($where ? ' AND ' : 'WHERE ') . "`$key` = ?";
-                        $params[] = $value;
-                    }
-                }
-                $stmt = $db->prepare("SELECT COUNT(*) AS count FROM `$table` $where");
-                $stmt->execute($params);
-                $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                sendJsonData($result);
-            }
 
             $result = $id ? fetchOne($db, $table, $id) : fetchAll($db, $table);
 
