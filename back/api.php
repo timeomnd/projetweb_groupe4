@@ -1,9 +1,4 @@
 <?php
-
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, X-API-KEY");
-
-
 $apiConfig = require __DIR__ . '/config/apikey.php';
 $expectedKey = $apiConfig['api_key'] ?? null;
 
@@ -101,6 +96,20 @@ function fetchAverageInstallationsPerYear($db) {
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ?: ['moyenne_installations_par_an' => 0];
 }
+function fetchForMapForm($db, $departement, $an) {
+    $sql = "SELECT l.lat, l.lon
+            FROM Localisation l
+            JOIN Installation i ON l.id = i.id_Localisation
+            JOIN Commune c ON l.id_Commune = c.id
+            JOIN Departement d ON d.id = c.id_Departement
+            WHERE d.dep_nom = :departement AND i.an_installation = :an";
+
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':departement', $departement);
+    $stmt->bindParam(':an', $an);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 function fetchInstallationsPerRegion($db) {
     $sql = "
         SELECT 
@@ -180,6 +189,14 @@ function updateOne($db, $table, $id, $data) {
 try {
     switch ($method) {
         case 'GET':
+            if ($table === 'Localisation' && isset($_GET['departement']) && isset($_GET['an'])) {
+                // Recherche par département et année
+                $departement = $_GET['departement'];
+                $an = $_GET['an'];
+                $result = fetchForMapForm($db, $departement, $an);
+                sendJsonData($result, 200);
+                break; // on sort du switch après l'envoi de la réponse
+            }
             //si installation et moyenne 
             if ($table === 'Installation' && isset($_GET['perYear']) && $_GET['perYear'] === 'true') {
                 $result = fetchAverageInstallationsPerYear($db);

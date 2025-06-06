@@ -8,9 +8,6 @@
       - url: http://10.10.51.124/back
 
     paths:
-      security:
-      - ApiKeyAuth: []
-
       /Installation:
         get:
           summary: Liste des installations. Différents paramètres possibles
@@ -138,13 +135,6 @@
               description: ID manquant
 
     components:
-   
-      securitySchemes:
-      ApiKeyAuth:
-        type: apiKey
-        in: header
-        name: X-API-KEY
-
       schemas:
         Installation:
           type: object
