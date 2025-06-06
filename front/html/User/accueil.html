@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="../../css/accueil.css">
   <script src="../../js/accueil.js"></script>
   <script src ="../../../back/js/AccueilAjax.js"></script>
+  <script src ="../../../back/js/Ajax.js"></script>
+
    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
 <body>
@@ -45,74 +47,72 @@
     <div class="row g-3 text-center mb-3 justify-content-center">
       <div class="col-6 col-md-4">
         <div class="info-box map">
-          <span class="info-green inst-recent">+12 000</span><br><small>Installations recensées</small>
+          <span class="info-green inst-recent"> </span><br><small>Installations recensées</small>
         </div>
       </div>
       <div class="col-6 col-md-4">
         <div class="info-box map">
-          <span class="info-yellow inst-an">230</span><br><small>Installations/Années</small>
+          <span class="info-yellow inst-an"> </span><br><small>Installations/Années</small>
         </div>
       </div>
       <div class="col-6 col-md-4">
         <div class="info-box map">
-          <span class="info-blue inst-reg">35</span><br><small>Installations/Région</small>
+          <span class="info-blue inst-reg"> </span><br><small>Installations/Région</small>
         </div>
       </div>
       <div class="col-6 col-md-4">
         <div class="info-box map">
-          <span class="info-green marq-ond">40</span><br><small>Marques d’onduleurs</small>
+          <span class="info-green marq-ond"> </span><br><small>Marques d’onduleurs</small>
         </div>
       </div>
       <div class="col-6 col-md-4">
         <div class="info-box map">
-          <span class="info-yellow marq-pan">230</span><br><small>Marques de panneaux</small>
+          <span class="info-yellow marq-pan"> </span><br><small>Marques de panneaux</small>
         </div>
       </div>
       <div class="col-6 col-md-4">
         <div class="info-box map">
-          <span class="info-blue inst">35</span><br><small>Installateurs</small>
+          <span class="info-blue inst"> </span><br><small>Installateurs</small>
         </div>
       </div>
       <div class="col-12">
         <div class="info-box map">
-          <span class="info-yellow inst-an-reg">20</span><br><small>Installations par années et par régions</small>
+          <span class="info-yellow inst-an-reg"> </span><br><small>Installations par années et par régions</small>
         </div>
       </div>
       <!-- Sélecteur de région -->
   <div class="mb-3 d-flex align-items-center gap-2 justify-content-center info-blue" >
     <label for="regionSelect" class="form-label fw-bold mb-0">Région :</label>
     <select id="regionSelect" class="form-select w-auto">
-      <option selected disabled>Choisir une région</option>
-      <option value="idf">Île-de-France</option>
-      <option value="paca">Provence-Alpes-Côte d’Azur</option>
-      <option value="na">Nouvelle-Aquitaine</option>
-      <option value="oc">Occitanie</option>
+      
     </select>
   </div>
 
   <!-- Tableau Statistique -->
-  <table class="table table-bordered text-center w-50 info-blue">
-      <thead class="table-light info-blue">
-        <tr>
-          <th>Année</th>
-          <th>Nombre d'installation</th>
-        </tr>
-      </thead>
-      <tbody class="info-blue">
-        <tr>
-          <td>2023</td>
-          <td>1200</td>
-        </tr>
-        <tr>
-          <td>2024</td>
-          <td>1350</td>
-        </tr>
-        <tr>
-          <td>2025</td>
-          <td>1500</td>
-        </tr>
-      </tbody>
-  </table>
+
+    <table class="table table-bordered text-center w-50 info-blue">
+        <thead>
+          <tr>
+            <th >Année</th>
+            <th >Nombre d'installation</th>
+          </tr>
+        </thead>
+        <tbody class="info-blue">
+          <tr>
+            <td>2023</td>
+            <td>1200</td>
+          </tr>
+          <tr>
+            <td>2024</td>
+            <td>1350</td>
+          </tr>
+          <tr>
+            <td>2025</td>
+            <td>1500</td>
+          </tr>
+        </tbody>
+    </table>
+
     </div>
 
     <!-- Boutons -->

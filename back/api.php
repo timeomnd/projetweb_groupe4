@@ -83,6 +83,12 @@ function fetchAll($db, $table) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+function fetchInstallationListYears($db) {
+    $sql = "SELECT DISTINCT an_installation from Installation ORDER BY an_installation LIMIT 20;";
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
 // nombre d'installations par an , fonction spécifique car ne fonctionne que pour la table Installation qui a an_installation
 function fetchAverageInstallationsPerYear($db) {
     $sql = "SELECT ROUND(AVG(nombre)) AS moyenne_installations_par_an
@@ -107,6 +113,34 @@ function fetchForMapForm($db, $departement, $an) {
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':departement', $departement);
     $stmt->bindParam(':an', $an);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function fetchForResearchForm($db, $marque_onduleur, $marque_panneau, $departement) {
+    $sql = "SELECT 
+            i.an_installation,
+            i.mois_installation,
+            i.nb_panneaux,
+            i.surface,
+            i.puissance_crete,
+            l.lat AS latitude,
+            l.lon AS longitude
+            FROM Installation i
+            JOIN Localisation l ON i.id_Localisation = l.id
+            JOIN Commune c ON l.id_Commune = c.id
+            JOIN Departement d ON c.id_Departement = d.id
+            JOIN Panneau p ON i.id_Panneau = p.id
+            JOIN Marque_panneau mp ON p.id_Marque_panneau = mp.id
+            JOIN Onduleur o ON i.id_Onduleur = o.id
+            JOIN Marque_onduleur mo ON o.id_Marque_onduleur = mo.id
+            WHERE d.dep_nom = :nom_dep_param
+            AND mp.nom_marque = :marque_panneau_param
+            AND mo.nom_marque = :marque_onduleur_param";
+            
+    $stmt = $db->prepare($sql);
+    $stmt->bindParam(':nom_dep_param', $departement);
+    $stmt->bindParam(':marque_panneau_param', $marque_panneau);
+    $stmt->bindParam(':marque_onduleur_param', $marque_onduleur);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -194,6 +228,21 @@ try {
                 $departement = $_GET['departement'];
                 $an = $_GET['an'];
                 $result = fetchForMapForm($db, $departement, $an);
+                sendJsonData($result, 200);
+                break; // on sort du switch après l'envoi de la réponse
+            }
+            if ($table === 'Installation' && isset($_GET['marque_onduleur']) && isset($_GET['marque_panneau']) && isset($_GET['departement'])) {
+                // Recherche par marque onduleur, marque panneau et département
+                $marque_onduleur = $_GET['marque_onduleur'];
+                $marque_panneau = $_GET['marque_panneau'];
+                $departement = $_GET['departement'];
+                $result = fetchForResearchForm($db, $marque_onduleur, $marque_panneau, $departement);
+                sendJsonData($result, 200);
+                break; // on sort du switch après l'envoi de la réponse
+            }
+            if( $table === 'Installation' && isset($_GET['years'])) {
+                // Récupération des années d'installation
+                $result = fetchInstallationListYears($db);
                 sendJsonData($result, 200);
                 break; // on sort du switch après l'envoi de la réponse
             }

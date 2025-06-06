@@ -19,6 +19,7 @@ function ajaxRequest(type, url, callback, data = null)
         url += '?' + data;
     xhr.open(type, url);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.setRequestHeader('X-API-KEY', 'projetwebCIR2-api-key'); 
 
     // Add the onload function.
     xhr.onload = () =>
