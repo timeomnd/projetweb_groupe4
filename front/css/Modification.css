@@ -15,9 +15,11 @@ h1 {
       text-align: center;
       vertical-align: middle;
     }
-    footer{
-        position: fixed;
-        bottom: 0;
+    .info-blue{
+      background-color: #1e3a8a;
+    }
+    .color-blue{
+      color: #1e3a8a;
     }
     .nav-link:hover{
       color: #16a34a;

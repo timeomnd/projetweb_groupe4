@@ -1,0 +1,10 @@
+
+
+.blue{
+  background-color: #1e3a8a;
+    color: white;
+}
+.blue:hover{
+  background-color: #16a34a;
+    color: white; /* garde le texte blanc au survol */
+}

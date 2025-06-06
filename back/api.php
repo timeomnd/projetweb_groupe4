@@ -1,4 +1,9 @@
 <?php
+
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: X-Requested-With, Content-Type, X-API-KEY");
+
+
 $apiConfig = require __DIR__ . '/config/apikey.php';
 $expectedKey = $apiConfig['api_key'] ?? null;
 
@@ -11,12 +16,6 @@ if (!$db) {
     exit;
 }
 
-// Fonction pour récupérer la clé API envoyée par le client dans les headers
-function getApiKeyFromHeaders() {
-    $headers = getallheaders();
-    return $headers['X-API-KEY'] ?? $headers['x-api-key'] ?? null;
-}
-
 // Réponse JSON
 function sendJsonData($data, $code = 200) {
     header('Content-Type: application/json; charset=utf-8');
@@ -25,11 +24,24 @@ function sendJsonData($data, $code = 200) {
     exit;
 }
 
-// Vérification clé API obligatoire avant traitement
-$clientKey = getApiKeyFromHeaders();
-if (!$expectedKey || !$clientKey || $clientKey !== $expectedKey) {
-    sendJsonData(['error' => 'Clé API invalide ou manquante'], 401);
+// Récupère la clé API des headers
+function getApiKeyFromHeaders() {
+    $headers = getallheaders();
+    return $headers['X-API-KEY'] ?? $headers['x-api-key'] ?? null;
 }
+
+// Vérifie que la clé API reçue est correcte
+function checkApiKey() {
+    global $expectedKey;
+    $clientKey = getApiKeyFromHeaders();
+
+    if (!$expectedKey || !$clientKey || $clientKey !== $expectedKey) {
+        sendJsonData(['error' => 'Clé API invalide ou manquante'], 401);
+    }
+}
+
+// Vérification clé API obligatoire avant traitement
+checkApiKey();
 
 $request = isset($_GET['request']) ? explode('/', trim($_GET['request'], '/')) : [];
 
@@ -44,33 +56,30 @@ $allowedTables = ['Commune', 'Departement', 'Region', 'Installateur', 'Installat
 if (!$table || !in_array($table, $allowedTables)) {
     sendJsonData(['error' => 'Table non autorisée ou non spécifiée'], 403);
 }
+function getTableColumns($db, $table) {
+    $stmt = $db->prepare("DESCRIBE `$table`");
+    $stmt->execute();
+    return array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
+}
 
 function fetchAll($db, $table) {
-    // Si count=true est présent, on renvoie le nombre d'enregistrements (avec filtres possibles)
+    // Si on veut juste le nombre d'enregistrements
     if (isset($_GET['count']) && $_GET['count'] === 'true') {
-        $where = '';
-        $params = [];
-
-        // On ajoute des clauses WHERE pour tous les autres paramètres GET
-        foreach ($_GET as $key => $value) {
-            if ($key !== 'count' && $key !== 'random' && $key !== 'limit') {
-                $where .= ($where ? ' AND ' : 'WHERE ') . "`$key` = ?";
-                $params[] = $value;
-            }
-        }
-
-        $stmt = $db->prepare("SELECT COUNT(*) AS count FROM `$table` $where");
-        $stmt->execute($params);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $db->prepare("SELECT COUNT(*) AS count FROM `$table`");
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: ['count' => 0];
     }
 
-    // Sinon, requête classique
+    // Requête de base
     $query = "SELECT * FROM `$table`";
-    //requête pour randomiser le résultat de la recherche
+
+    // Si random est demandé, on ajoute ORDER BY RAND()
     if (isset($_GET['random']) && $_GET['random'] === 'true') {
         $query .= " ORDER BY RAND()";
     }
-    // requête pour limiter le nombre de résultats
+
+    // Si limit est demandé, on l’ajoute quelle que soit la présence de random
     if (isset($_GET['limit']) && is_numeric($_GET['limit'])) {
         $query .= " LIMIT " . intval($_GET['limit']);
     }
@@ -79,8 +88,60 @@ function fetchAll($db, $table) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+// nombre d'installations par an , fonction spécifique car ne fonctionne que pour la table Installation qui a an_installation
+function fetchAverageInstallationsPerYear($db) {
+    $sql = "SELECT ROUND(AVG(nombre)) AS moyenne_installations_par_an
+            FROM (
+                SELECT an_installation AS annee, COUNT(*) AS nombre
+                FROM Installation
+                GROUP BY an_installation
+            ) AS sous_requete";
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $result ?: ['moyenne_installations_par_an' => 0];
+}
+function fetchInstallationsPerRegion($db) {
+    $sql = "
+        SELECT 
+        ROUND(AVG(nombre_installations)) AS moyenne_installations_par_region
+        FROM (
+        SELECT 
+        r.reg_nom AS region,
+        COUNT(i.id) AS nombre_installations
+        FROM Installation i
+        JOIN Localisation l ON i.id_Localisation = l.id
+        JOIN Commune c ON l.id_Commune = c.id
+        JOIN Departement d ON c.id_Departement = d.id
+        JOIN Region r ON d.id_Region = r.id
+        GROUP BY r.id, r.reg_nom
+        ) AS sous_requete;
 
-
+    ";
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function fetchInstallationsPerRegionPerYear($db) {
+    $sql = "
+        SELECT 
+        ROUND(AVG(nombre_installations)) AS moyenne_installations_globale
+        FROM (
+        SELECT 
+            r.reg_nom AS region,
+            i.an_installation,
+            COUNT(i.id) AS nombre_installations
+        FROM Installation i
+        JOIN Localisation l ON i.id_Localisation = l.id
+        JOIN Commune c ON l.id_Commune = c.id
+        JOIN Departement d ON c.id_Departement = d.id
+        JOIN Region r ON d.id_Region = r.id
+        GROUP BY r.id, r.reg_nom, i.an_installation
+        ) AS sous;";
+    $stmt = $db->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 function fetchOne($db, $table, $id) {
     $stmt = $db->prepare("SELECT * FROM `$table` WHERE id = ?");
@@ -119,13 +180,39 @@ function updateOne($db, $table, $id, $data) {
 try {
     switch ($method) {
         case 'GET':
+            //si installation et moyenne 
+            if ($table === 'Installation' && isset($_GET['perYear']) && $_GET['perYear'] === 'true') {
+                $result = fetchAverageInstallationsPerYear($db);
+                sendJsonData($result, 200);
+                break; // on sort du switch après l'envoi de la réponse
+            }
+            if ($table === 'Installation' && isset($_GET['perRegion']) && $_GET['perRegion'] === 'true') {
+                $result = fetchInstallationsPerRegion($db);
+                sendJsonData($result, 200);
+                break; // on sort du switch après l'envoi de la réponse
+            }
+            if ($table === 'Installation' && isset($_GET['perRegionPerYear']) && $_GET['perRegionPerYear'] === 'true') {
+                $result = fetchInstallationsPerRegionPerYear($db);
+                sendJsonData($result, 200);
+                break; // on sort du switch après l'envoi de la réponse
+            }
 
+            // Sinon, on continue avec la logique classique
             $result = $id ? fetchOne($db, $table, $id) : fetchAll($db, $table);
 
+            if (isset($_GET['count']) && $_GET['count'] === 'true') {
+                sendJsonData($result, 200);
+                break;
+            }
+
+            // Vérification du résultat
             if ($result && (!is_array($result) || count($result) > 0)) {
                 sendJsonData($result, 200);
             } else {
-                sendJsonData(['error' => $id ? "Aucun enregistrement trouvé dans $table avec id=$id" : "Aucun enregistrement trouvé dans $table"], 404);
+                sendJsonData(
+                    ['error' => $id ? "Aucun enregistrement trouvé dans $table avec id=$id" : "Aucun enregistrement trouvé dans $table"],
+                    404
+                );
             }
             break;
 

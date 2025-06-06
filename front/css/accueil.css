@@ -72,3 +72,9 @@ small {
   max-height: 300px;
   object-fit: cover;
 }
+.blue{
+  background-color: #1e3a8a;
+}
+.blue:hover{
+  background-color: #16a34a;
+}

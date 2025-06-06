@@ -1,0 +1,171 @@
+    openapi: 3.0.3
+    info:
+      title: API ENERGISEN
+      description: API PHP natif pour accéder aux données des installations solaires.
+      version: 1.0.0
+
+    servers:
+      - url: http://10.10.51.124/back
+
+    paths:
+      security:
+      - ApiKeyAuth: []
+
+      /Installation:
+        get:
+          summary: Liste des installations. Différents paramètres possibles
+          parameters:
+            - name: count 
+              in: query
+              description: Retourner le nombre d’installations
+              required: false
+              schema:
+                type: boolean
+            - name: random
+              in: query
+              description: Retourne la liste des installations dans un ordre aléatoire
+              required: false
+              schema:
+                type: boolean
+            - name: limit
+              in: query
+              description: Limite le nombre de résultats au nombre spécifié
+              required: false
+              schema:
+                type: integer
+            - name: average
+              in: query
+              description : Retourne la moyenne des installations par année. Ne marche qu'avec Installation
+              required: false
+              schema:
+                type: boolean
+            - name: perRegionPerYear
+              in: query
+              description: Retourne la moyenne des installations par région et par année. Ne marche qu'avec Installation
+              required: false
+              schema:
+                type: boolean
+            - name: perYear
+              in: query
+              description: Retourne la moyenne des installations par année. Ne marche qu'avec Installation
+              required: false
+              schema:
+                type: boolean
+          responses:
+            '200':
+              description: Liste ou comptage des installations
+              content:
+                application/json:
+                  schema:
+                    oneOf:
+                      - type: array
+                        items:
+                          $ref: '#/components/schemas/Installation'
+                      - type: object
+                        properties:
+                          count:
+                            type: integer
+            '401':
+              description: Clé API invalide ou manquante
+            '503':
+              description: Erreur de connexion à la base de données
+
+        post:
+          summary: Ajouter une installation
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Installation'
+          responses:
+            '201':
+              description: Installation créée
+            '400':
+              description: Données JSON invalides
+
+      /Installation/{id}:
+        get:
+          summary: Récupérer une installation par ID
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Détails de l’installation
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Installation'
+            '404':
+              description: Aucune installation trouvée
+
+        patch:
+          summary: Modifier une installation existante
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Installation'
+          responses:
+            '200':
+              description: Installation mise à jour
+            '400':
+              description: Données invalides ou ID manquant
+
+        delete:
+          summary: Supprimer une installation
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: integer
+          responses:
+            '200':
+              description: Installation supprimée
+            '400':
+              description: ID manquant
+
+    components:
+   
+      securitySchemes:
+      ApiKeyAuth:
+        type: apiKey
+        in: header
+        name: X-API-KEY
+
+      schemas:
+        Installation:
+          type: object
+          properties:
+            id:
+              type: integer
+            mois_installation:
+              type: integer
+            an_installation:
+              type: integer
+            surface:
+              type: number
+            puissance_crete:
+              type: number
+            nombre_panneaux:
+              type: integer
+            id_localisation:
+              type: integer
+            id_installateur:
+              type: integer
+            id_modele_panneau:
+              type: integer
+            id_modele_onduleur:
+              type: integer
