@@ -7,7 +7,7 @@ import mysql.connector
 # Le traitement direct avec Python est plus adapté ici, car il évite les ambigüités liées aux sous-requêtes SQL multiples et permet un meilleur contrôle de l'intégrité des données. 
 
 # Chargement du fichier villecodeinseemap.txt
-def load_ville_to_insee_map(filepath = "villecodeinseemap.txt"):
+def load_ville_to_insee_map(filepath = "C:/Users/allie/OneDrive - yncréa/Documents/GitHub/projetweb_groupe4/py/villecodeinseemap.txt"):
     mapping = {}
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
@@ -106,7 +106,7 @@ cursor = conn.cursor(buffered=True)
 ville_map = load_ville_to_insee_map()
 
 # Lecture CSV
-with open("../csv/data_corrige.csv", newline='', encoding="utf-8") as csvfile:
+with open("C:/Users/allie/OneDrive - yncréa/Documents/GitHub/projetweb_groupe4/csv/data_corrige.csv", newline='', encoding="utf-8") as csvfile:
     reader = csv.DictReader(csvfile, delimiter=',', quotechar='"')
     for row in reader:
         id_installateur = get_or_create_installateur(cursor, row["installateur"].strip())
