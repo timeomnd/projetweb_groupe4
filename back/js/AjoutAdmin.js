@@ -58,16 +58,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
         console.log("Données à envoyer :", data); 
 
-        // // Envoie la requête AJAX
-        // ajaxRequest(
-        //     'POST',
-        //     'http://10.10.51.124/back/Installation',
-        //     (response) => {
-        //         console.log('Installation ajoutée :', response);
-        //         alert('Installation ajoutée en base de données avec succès.');
-        //         form.reset(); // réinitialise le formulaire
-        //     },
-        //     data
-        // );
+        // Envoie la requête AJAX
+        ajaxRequest(
+            'POST',
+            'http://10.10.51.124/back/Installation',
+            (response) => {
+                console.log('Installation ajoutée :', response);
+                alert('Installation ajoutée en base de données avec succès.');
+                form.reset(); // réinitialise le formulaire
+            },
+            data
+        );
     });
 });
