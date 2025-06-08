@@ -51,9 +51,7 @@ function displayInstallationYears(data) {
 }
 
 
-//ajaxRequest(
-      //  'GET',
-       // 'http://10.10.51.124/back/Localisation&departement=&an=$année
-   // )
-
-   // mettre année = et département = dans l'url avec les trucs rentré dans le select
+ajaxRequest(
+      'GET',
+       'http://10.10.51.124/back/Localisation&departement=$dep&an=$an'
+    )
