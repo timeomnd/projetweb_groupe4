@@ -14,6 +14,26 @@ window.addEventListener('DOMContentLoaded', () => {
         displayInstallationYears,
         null
     );
+    document.getElementById('btnRecherche').addEventListener('click', (event) => {
+        event.preventDefault(); // empêche le rechargement du formulaire
+
+        const dep = document.getElementById('selectDepartement').value;
+        const an = document.getElementById('selectAnInstallation').value;
+
+        if (!dep || !an) {
+            alert("Veuillez choisir un département et une année.");
+            return;
+        }
+
+        const url = `http://10.10.51.124/back/Localisation&departement=${encodeURIComponent(dep)}&an=${an}`;
+
+        ajaxRequest(
+            'GET',
+            url,
+            displayMapMarkers, // callback de traitement des coordonnées
+            null
+        );
+    });
 });
 
 //CALLBACKS
@@ -50,8 +70,23 @@ function displayInstallationYears(data) {
     });
 }
 
+function displayInstallationsOnMap(data) {
+  // Supprime les anciens marqueurs
+  map.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      map.removeLayer(layer);
+    }
+  });
 
-ajaxRequest(
-      'GET',
-       'http://10.10.51.124/back/Localisation&departement=$dep&an=$an'
-    )
+  // Ajoute un marqueur pour chaque point
+  data.forEach(item => {
+    const lat = item.lat;
+    const lon = item.lon;
+
+    if (lat && lon) {
+      L.marker([lat, lon])
+        .addTo(map)
+        .bindPopup(`Lat: ${lat}<br>Lon: ${lon}`);
+    }
+  });
+}
