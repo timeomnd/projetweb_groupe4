@@ -2,6 +2,9 @@
 $apiConfig = require __DIR__ . '/config/apikey.php';
 $expectedKey = $apiConfig['api_key'] ?? null;
 
+$passwordAdmin = require __DIR__ . '/config/passwordAdmin.php';
+$expectedPasswordHash = $passwordConfig['admin_password_hash'] ?? null;
+
 require_once('database/database.php');
 
 // Connexion base de données
