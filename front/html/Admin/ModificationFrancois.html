@@ -38,7 +38,7 @@
     <form class="form-inline" onsubmit="event.preventDefault();">
         <label for="installId">ID de l'installation :</label>
         <input type="number" class="form-control" id="installId" required>
-        <button type="submit" class="btn btn-primary info-blue">Rechercher</button>
+        <button type="submit" class="btn btn-primary info-blue" onclick="fetchInstallation()">Rechercher</button>
     </form>
 
 
@@ -68,6 +68,12 @@
         </table>
     </div>
   </div>
+
+  <div class="d-flex justify-content-center gap-2 mt-3">
+    <button class="btn btn-warning btn-sm" id = "modifierBtn">Modifier</button>
+    <button class="btn btn-danger btn-sm" id = "supprimerBtn">Supprimer</button>
+  </div>
+
 
 </main>
 

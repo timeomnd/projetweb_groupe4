@@ -19,7 +19,7 @@ function displayInstallation(data) {
     tbody.innerHTML = ''; // vide le tableau avant ajout
 
     if (!data || data.error) {
-        tbody.innerHTML = '<tr><td colspan="15" class="text-danger">Installation introuvable.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="15" class="text-danger">Installation introuvable avec cet ID</td></tr>';
         return;
     }
 
