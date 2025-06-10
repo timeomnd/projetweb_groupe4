@@ -3,49 +3,49 @@
 window.addEventListener('DOMContentLoaded', () => {
     ajaxRequest(    
         'GET',
-        'http://10.10.51.124/back/Installation&count=true',
+        'http://10.10.51.124/back/Installation?count=true',
         displayInstallationCount,
         null
     );
 
     ajaxRequest(    
         'GET',
-        'http://10.10.51.124/back/Marque_onduleur&count=true',
+        'http://10.10.51.124/back/Marque_onduleur?count=true',
         displayOnduleurMarqueCount,
         null
     );
 
       ajaxRequest(    
         'GET',
-        'http://10.10.51.124/back/Marque_panneau&count=true',
+        'http://10.10.51.124/back/Marque_panneau?count=true',
         displayPanneauMarqueCount,
         null
     );
 
      ajaxRequest(    
         'GET',
-        'http://10.10.51.124/back/Installateur&count=true',
+        'http://10.10.51.124/back/Installateur?count=true',
         displayInstallateurCount,
         null
     );
 
     ajaxRequest(    
         'GET',
-        'http://10.10.51.124/back/Installation&perYear=true',
+        'http://10.10.51.124/back/Installation?perYear=true',
         displayInstallationPerYear,
         null
     );
 
     ajaxRequest(    
         'GET',
-        'http://10.10.51.124/back/Installation&perRegion=true',
+        'http://10.10.51.124/back/Installation?perRegion=true',
         displayInstallationPerRegion,
         null
     )
 
     ajaxRequest(    
         'GET',
-        'http://10.10.51.124/back/Installation&perRegionPerYear=true',
+        'http://10.10.51.124/back/Installation?perRegionPerYear=true',
         displayInstallationPerRegionPerYear,
         null
     );  
@@ -81,6 +81,7 @@ function displayOnduleurMarqueCount(data){
 
 
 function displayInstallationCount(data) {
+    console.log('Réponse Installation:', data);
     if ('count' in data) {
         document.querySelector('.inst-recent').textContent = data.count;
     } else {

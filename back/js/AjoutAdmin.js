@@ -11,6 +11,7 @@ form.addEventListener('submit', function (event) {
     let nb_onduleur = parseInt(document.getElementById('onduleurs').value);
     let pente = parseFloat(document.getElementById('pente').value);
     let pente_optimum = parseFloat(document.getElementById('pente_optimum').value);
+    let orientation_optimum = parseFloat(document.getElementById('orientation_opt').value);
     let surface = parseFloat(document.getElementById('surface').value);
     let production_pvgis = parseFloat(document.getElementById('production').value);
     let puissance_crete = parseFloat(document.getElementById('puissance').value);
@@ -22,7 +23,7 @@ form.addEventListener('submit', function (event) {
     
     // Champs pouvant être textuels
     let orientation = document.getElementById('orientation').value.trim();
-    let orientation_optimum = document.getElementById('orientation_opt').value.trim();
+   
 
     // Vérifie que tous les champs sont remplis et valides
     if (
@@ -30,8 +31,8 @@ form.addEventListener('submit', function (event) {
         isNaN(an_installation) || isNaN(nb_panneaux) || isNaN(nb_onduleur) ||
         isNaN(pente) || isNaN(pente_optimum) || isNaN(surface) ||
         isNaN(production_pvgis) || isNaN(puissance_crete) ||
-        isNaN(id_Localisation) || isNaN(id_Panneau) || isNaN(id_Onduleur) || isNaN(id_Installateur) ||
-        orientation === '' || orientation_optimum === ''
+        isNaN(id_Localisation) || isNaN(id_Panneau) || isNaN(id_Onduleur) || isNaN(id_Installateur) || isNaN(orientation_optimum) ||
+        orientation === '' 
     ) {
         alert('Merci de remplir tous les champs correctement.');
         return;

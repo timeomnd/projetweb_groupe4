@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Requête AJAX pour récupérer le nombre total d'installations
     ajaxRequest(    
         'GET',
-        'http://10.10.51.124/back/Departement&random=true&limit=20',
+        'http://10.10.51.124/back/Departement?random=true&limit=20',
         displayDepartementRandomListLimit20,
         null
     );
@@ -30,7 +30,7 @@ window.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const url = `http://10.10.51.124/back/Localisation&departement=${encodeURIComponent(dep)}&an=${an}`;
+        const url = `http://10.10.51.124/back/Localisation?departement=${encodeURIComponent(dep)}&an=${an}`;
 
         ajaxRequest(
             'GET',

@@ -1,9 +1,6 @@
 <?php
-$apiConfig = require __DIR__ . '/config/apikey.php';
-$expectedKey = $apiConfig['api_key'] ?? null;
 
-$passwordAdmin = require __DIR__ . '/config/passwordAdmin.php';
-$expectedPasswordHash = $passwordConfig['admin_password_hash'] ?? null;
+
 
 require_once('database/database.php');
 
@@ -21,25 +18,6 @@ function sendJsonData($data, $code = 200) {
     echo json_encode($data);
     exit;
 }
-
-// Récupère la clé API des headers
-function getApiKeyFromHeaders() {
-    $headers = getallheaders();
-    return $headers['X-API-KEY'] ?? $headers['x-api-key'] ?? null;
-}
-
-// Vérifie que la clé API reçue est correcte
-function checkApiKey() {
-    global $expectedKey;
-    $clientKey = getApiKeyFromHeaders();
-
-    if (!$expectedKey || !$clientKey || $clientKey !== $expectedKey) {
-        sendJsonData(['error' => 'Clé API invalide ou manquante'], 401);
-    }
-}
-
-// Vérification clé API obligatoire avant traitement
-checkApiKey();
 
 $request = isset($_GET['request']) ? explode('/', trim($_GET['request'], '/')) : [];
 
@@ -119,34 +97,94 @@ function fetchForMapForm($db, $departement, $an) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-function fetchForResearchForm($db, $marque_onduleur, $marque_panneau, $departement) {
+function fetchInstallations($db, $filters = [], $page = 1, $limit = 20) {
+    $offset = ($page - 1) * $limit;
+    $where = [];
+    $params = [];
+
+    if (!empty($filters['marque_onduleur'])) {
+        $where[] = "mo.nom_marque = :marque_onduleur";
+        $params[':marque_onduleur'] = $filters['marque_onduleur'];
+    }
+    if (!empty($filters['marque_panneau'])) {
+        $where[] = "mp.nom_marque = :marque_panneau";
+        $params[':marque_panneau'] = $filters['marque_panneau'];
+    }
+    if (!empty($filters['departement'])) {
+        $where[] = "d.dep_nom = :departement";
+        $params[':departement'] = $filters['departement'];
+    }
+
+    $whereSql = $where ? "WHERE " . implode(" AND ", $where) : "";
+
     $sql = "SELECT 
-            i.an_installation,
-            i.mois_installation,
-            i.nb_panneaux,
-            i.surface,
-            c.nom_standard,
-            i.puissance_crete,
-            l.lat AS latitude,
-            l.lon AS longitude
+                i.id,
+                i.an_installation,
+                i.mois_installation,
+                i.nb_panneaux,
+                i.nb_onduleur,
+                i.pente,
+                i.pente_optimum,
+                i.orientation,
+                i.orientation_optimum,
+                i.surface,
+                i.production_pvgis,
+                i.puissance_crete,
+                l.lat AS latitude,
+                l.lon AS longitude,
+                c.nom_standard,
+                c.id AS commune_id,
+                d.dep_nom AS departement,
+                d.id AS departement_id,
+                mp.nom_marque AS marque_panneau,
+                mp.id AS id_marque_panneau,
+                mpp.nom_modele AS modele_panneau,
+                mo.nom_marque AS marque_onduleur,
+                mo.id AS id_marque_onduleur,
+                moo.nom_modele AS modele_onduleur
             FROM Installation i
             JOIN Localisation l ON i.id_Localisation = l.id
             JOIN Commune c ON l.id_Commune = c.id
             JOIN Departement d ON c.id_Departement = d.id
             JOIN Panneau p ON i.id_Panneau = p.id
             JOIN Marque_panneau mp ON p.id_Marque_panneau = mp.id
+            JOIN Modele_panneau mpp ON p.id_Modele_panneau = mpp.id
             JOIN Onduleur o ON i.id_Onduleur = o.id
             JOIN Marque_onduleur mo ON o.id_Marque_onduleur = mo.id
-            WHERE d.dep_nom = :nom_dep_param
-            AND mp.nom_marque = :marque_panneau_param
-            AND mo.nom_marque = :marque_onduleur_param";
-            
+            JOIN Modele_onduleur moo ON o.id_Modele_onduleur = moo.id
+            $whereSql
+            ORDER BY i.an_installation DESC, i.mois_installation DESC
+            LIMIT :limit OFFSET :offset";
+
     $stmt = $db->prepare($sql);
-    $stmt->bindParam(':nom_dep_param', $departement);
-    $stmt->bindParam(':marque_panneau_param', $marque_panneau);
-    $stmt->bindParam(':marque_onduleur_param', $marque_onduleur);
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value);
+    }
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
     $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Pagination
+    $countSql = "SELECT COUNT(*) FROM Installation i
+        JOIN Localisation l ON i.id_Localisation = l.id
+        JOIN Commune c ON l.id_Commune = c.id
+        JOIN Departement d ON c.id_Departement = d.id
+        JOIN Panneau p ON i.id_Panneau = p.id
+        JOIN Marque_panneau mp ON p.id_Marque_panneau = mp.id
+        JOIN Modele_panneau mpp ON p.id_Modele_panneau = mpp.id
+        JOIN Onduleur o ON i.id_Onduleur = o.id
+        JOIN Marque_onduleur mo ON o.id_Marque_onduleur = mo.id
+        JOIN Modele_onduleur moo ON o.id_Modele_onduleur = moo.id
+        $whereSql";
+    $stmt2 = $db->prepare($countSql);
+    foreach ($params as $key => $value) {
+        $stmt2->bindValue($key, $value);
+    }
+    $stmt2->execute();
+    $total = $stmt2->fetchColumn();
+
+    return ['data' => $data, 'total' => (int)$total];
 }
 function fetchInstallationsPerRegion($db) {
     $sql = "
@@ -235,15 +273,6 @@ try {
                 sendJsonData($result, 200);
                 break; // on sort du switch après l'envoi de la réponse
             }
-            if ($table === 'Installation' && isset($_GET['marque_onduleur']) && isset($_GET['marque_panneau']) && isset($_GET['departement'])) {
-                // Recherche par marque onduleur, marque panneau et département
-                $marque_onduleur = $_GET['marque_onduleur'];
-                $marque_panneau = $_GET['marque_panneau'];
-                $departement = $_GET['departement'];
-                $result = fetchForResearchForm($db, $marque_onduleur, $marque_panneau, $departement);
-                sendJsonData($result, 200);
-                break; // on sort du switch après l'envoi de la réponse
-            }
             if( $table === 'Installation' && isset($_GET['years'])) {
                 // Récupération des années d'installation
                 $result = fetchInstallationListYears($db);
@@ -265,6 +294,19 @@ try {
                 $result = fetchInstallationsPerRegionPerYear($db);
                 sendJsonData($result, 200);
                 break; // on sort du switch après l'envoi de la réponse
+            }
+            if ($table === 'Installation') {
+                // Pagination
+                $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+                $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 20;
+                $filters = [
+                    'marque_onduleur' => $_GET['marque_onduleur'] ?? null,
+                    'marque_panneau' => $_GET['marque_panneau'] ?? null,
+                    'departement' => $_GET['departement'] ?? null
+                ];
+                $result = fetchInstallations($db, $filters, $page, $limit);
+                sendJsonData($result, 200);
+                break;
             }
 
             // Sinon, on continue avec la logique classique

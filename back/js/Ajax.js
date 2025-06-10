@@ -17,9 +17,17 @@ function ajaxRequest(type, url, callback, data = null)
     xhr = new XMLHttpRequest();
     if (type == 'GET' && data != null)
         url += '?' + data;
-    xhr.open(type, url);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader('X-API-KEY', 'projetwebCIR2-api-key'); 
+
+    xhr.open(type, url); 
+ 
+
+    // Pour POST/PATCH, envoie du JSON
+    if (type === 'POST' || type === 'PATCH') {
+        xhr.setRequestHeader('Content-Type', 'application/json');
+    } else {
+        //GET/DELETE
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    }
 
     // Add the onload function.
     xhr.onload = () =>
@@ -37,7 +45,11 @@ function ajaxRequest(type, url, callback, data = null)
     };
 
     // Send XML HTTP request.
-    xhr.send(data);
+     if (type === 'POST' || type === 'PUT' || type === 'PATCH') {
+        xhr.send(data ? JSON.stringify(data) : null);
+    } else {
+        xhr.send();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -58,7 +70,7 @@ function httpErrors(errorCode)
         };
 
     // Display error.
-    
+
     const errorsElement = document.getElementById('errors');
     if (errorsElement && messages[errorCode]) {
         errorsElement.innerHTML = '<i class="fa fa-exclamation-circle"></i> <strong>' + messages[errorCode] + '</strong>';

@@ -5,8 +5,9 @@
   <title>ENERG'ISEN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../../css/recherche.css">
   <link rel="stylesheet" href="../../css/accueil.css"> 
+  <link rel="stylesheet" href="../../css/recherche.css">
+  
 
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
   <script src ="../../../back/js/Recherche.js"></script>
@@ -79,55 +80,39 @@
     <div class="table-responsive">
       <table class="table table-bordered text-center align-middle shadow-sm bg-white">
         <thead class="table-light">
-  <tr>
-    <th scope="col">
-      <span class="material-symbols-outlined me-1 align-middle info-blue">calendar_month</span>
-      <span class="align-middle">Date d'installation</span>
-    </th>
-    <th scope="col">
-      <span class="material-symbols-outlined me-1 align-middle info-blue">confirmation_number</span>
-      <span class="align-middle">Nombre de panneaux</span>
-    </th>
-    <th scope="col">
-      <span class="material-symbols-outlined me-1 align-middle info-blue">square_foot</span>
-      <span class="align-middle">Surface</span>
-    </th>
-    <th scope="col">
-      <span class="material-symbols-outlined me-1 align-middle info-blue">electric_bolt</span>
-      <span class="align-middle">Puissance crête</span>
-    </th>
-    <th scope="col">
-      <span class="material-symbols-outlined me-1 align-middle info-blue">location_on</span>
-      <span class="align-middle">Localisation</span>
-    </th>
-  </tr>
-</thead>
-
-        <tbody>
-          <tr>
-            <td>01/2025</td>
-            <td>20</td>
-            <td>50 m²</td>
-            <td>5 kWc</td>
-            <td>Lille</td>
-          </tr>
-          <tr class="table-secondary">
-            <td colspan="5"><a href="detail.html">Cliquez ici pour voir les détails de cette installation</a></td>
-          </tr>
-          <tr>
-            <td>02/2025</td>
-            <td>30</td>
-            <td>75 m²</td>
-            <td>7.5 kWc</td>
-            <td>Lyon</td>
-          </tr>
-          <tr class="table-secondary">
-            <td colspan="5"><a href="detail.html">Cliquez ici pour voir les détails de cette installation</a></td>
-          </tr>
-        </tbody>
+                <tr>
+                  <th scope="col">
+                    <span class="material-symbols-outlined me-1 align-middle info-blue">calendar_month</span>
+                    <span class="align-middle">Date d'installation</span>
+                  </th>
+                  <th scope="col">
+                    <span class="material-symbols-outlined me-1 align-middle info-blue">confirmation_number</span>
+                    <span class="align-middle">Nombre de panneaux</span>
+                  </th>
+                  <th scope="col">
+                    <span class="material-symbols-outlined me-1 align-middle info-blue">square_foot</span>
+                    <span class="align-middle">Surface</span>
+                  </th>
+                  <th scope="col">
+                    <span class="material-symbols-outlined me-1 align-middle info-blue">electric_bolt</span>
+                    <span class="align-middle">Puissance crête</span>
+                  </th>
+                  <th scope="col">
+                    <span class="material-symbols-outlined me-1 align-middle info-blue">location_on</span>
+                    <span class="align-middle">Localisation</span>
+                  </th>
+                </tr>
+      </thead>
+      <tbody id="installationTableBody">
+      </tbody>
       </table>
     </div>
   </div>
+  <nav aria-label="Page navigation example " class="d-flex justify-content-center ">
+  <ul class="pagination info-blue">
+  <!-- Pagination générée dynamiquement par JS -->
+  </ul>
+  </nav>
 
   <!-- Footer plein écran -->
   <footer class="footer-full text-white d-flex justify-content-between align-items-center px-4 py-3">
