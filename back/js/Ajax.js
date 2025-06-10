@@ -58,10 +58,12 @@ function httpErrors(errorCode)
         };
 
     // Display error.
-    if (errorCode in messages)
-    {
-        $('#errors').html('<i class="fa fa-exclamation-circle"></i> <strong>' +
-            messages[errorCode] + '</strong>');
-        $('#errors').show();
+    
+    const errorsElement = document.getElementById('errors');
+    if (errorsElement && messages[errorCode]) {
+        errorsElement.innerHTML = '<i class="fa fa-exclamation-circle"></i> <strong>' + messages[errorCode] + '</strong>';
+        errorsElement.style.display = 'block';
     }
+
+    console.error('Erreur HTTP ' + errorCode + ' : ' + (messages[errorCode] || 'Erreur inconnue'));
 }

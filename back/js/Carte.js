@@ -1,6 +1,11 @@
 'use strict';
-
+let map;
 window.addEventListener('DOMContentLoaded', () => {
+    map = L.map('map').setView([46.5, 2.5], 6); // ou un autre centre selon ton besoin
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
     // Requête AJAX pour récupérer le nombre total d'installations
     ajaxRequest(    
         'GET',
@@ -30,7 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
         ajaxRequest(
             'GET',
             url,
-            displayMapMarkers, // callback de traitement des coordonnées
+            displayInstallationsOnMap, // callback de traitement des coordonnées
             null
         );
     });
@@ -72,6 +77,7 @@ function displayInstallationYears(data) {
 
 function displayInstallationsOnMap(data) {
   // Supprime les anciens marqueurs
+  console.log("displayInstallationsOnMap", data);
   map.eachLayer(layer => {
     if (layer instanceof L.Marker) {
       map.removeLayer(layer);
@@ -84,9 +90,15 @@ function displayInstallationsOnMap(data) {
     const lon = item.lon;
 
     if (lat && lon) {
-      L.marker([lat, lon])
+        L.marker([lat, lon])
         .addTo(map)
-        .bindPopup(`Lat: ${lat}<br>Lon: ${lon}`);
+        .bindPopup(`
+            <strong>Commune :</strong> ${item.commune}<br>
+            <strong>Puissance crête :</strong> ${item.puissance_crete} Wc<br>
+            <a href="../../../front/html/User/detail.html?data=${encodeURIComponent(JSON.stringify(item))}">
+            Voir les détails
+            </a>
+        `);
     }
   });
 }

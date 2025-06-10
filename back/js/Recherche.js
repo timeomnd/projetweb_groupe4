@@ -1,28 +1,30 @@
  // chargement des données pour remplire les select de manier random
  window.addEventListener('DOMContentLoaded', () => {
-   ajaxRequest('GET', 'http://10.10.51.124/back/Marque_onduleur&random=true&limit=20', displayInstallationMarqueOnduleurs, null);
-   ajaxRequest('GET', 'http://10.10.51.124/back/Marque_panneau&random=true&limit=20', displayInstallationMarquePanneaux, null);
-   ajaxRequest('GET', 'http://10.10.51.124/back/Departement&random=true&limit=20', displayDepartement, null);
-     const btn = document.querySelector("#button");
+    ajaxRequest('GET', 'http://10.10.51.124/back/Marque_onduleur&random=true&limit=20', displayInstallationMarqueOnduleurs, null);
+    ajaxRequest('GET', 'http://10.10.51.124/back/Marque_panneau&random=true&limit=20', displayInstallationMarquePanneaux, null);
+    ajaxRequest('GET', 'http://10.10.51.124/back/Departement&random=true&limit=20', displayDepartement, null);
+    ajaxRequest('GET', 'http://10.10.51.124/back/Installation?marque_panneau&marque_onduleur&departement', displaySearch, null);
+
+    const btn = document.querySelector("#button");
     if (btn) {
         btn.addEventListener('click', () => {
-           // preventDefault();
-           let marq_onduleur= document.querySelector("#selectOnduleur").selectedOptions[0].text;
-           let marq_panneau= document.querySelector("#selectPanneaux").selectedOptions[0].text;
-           let departement= document.querySelector("#selectDepartement").selectedOptions[0].text;
-           console.log(marq_onduleur,marq_panneau,departement);
+            let marq_onduleur = document.querySelector("#selectOnduleur").selectedOptions[0].text;
+            let marq_panneau = document.querySelector("#selectPanneaux").selectedOptions[0].text;
+            let departement = document.querySelector("#selectDepartement").selectedOptions[0].text;
+
+            console.log(marq_onduleur, marq_panneau, departement);
+
             ajaxRequest(
                 'GET',
-                `http://10.10.51.124/back/Installation&marque_onduleur=${marq_onduleur}&marque_panneau=${marq_panneau}&departement=${departement}&limit=100`,
+                `http://10.10.51.124/back/Installation?Marque_panneau=${encodeURIComponent(marq_panneau)}&Marque_onduleur=${encodeURIComponent(marq_onduleur)}&Departement=${encodeURIComponent(departement)}`,
                 displaySearch,
                 null
             );
         });
     } else {
-        console.error("Bouton '.btn' non trouvé dans le DOM");
+        console.error("Bouton '#button' non trouvé dans le DOM");
     }
 });
-
 
 
 function displayInstallationMarqueOnduleurs(datas){
@@ -69,7 +71,7 @@ function displaySearch(datas){
                     <td>${data.nb_panneaux}</td>
                     <td>${data.surface}</td>
                     <td>${data.puissance_crete}</td>
-                    <td>${data.id_loclisation}</td>
+                    <td>lon = ${data.lo}, lat:${data.lat}</td>
                 </tr>
                 <tr class="table-secondary">
                     <td colspan="5"><a href="detail.html">Cliquez ici pour voir les détails de cette installation</a></td>

@@ -106,7 +106,7 @@ function fetchAverageInstallationsPerYear($db) {
     return $result ?: ['moyenne_installations_par_an' => 0];
 }
 function fetchForMapForm($db, $departement, $an) {
-    $sql = "SELECT l.lat, l.lon
+    $sql = "SELECT l.lat, l.lon, c.nom_standard AS commune, i.puissance_crete, i.an_installation, i.mois_installation, i.nb_panneaux, i.nb_onduleur, i.pente, i.pente_optimum, i.surface, i.production_pvgis, i.orientation, i.orientation_optimum 
             FROM Localisation l
             JOIN Installation i ON l.id = i.id_Localisation
             JOIN Commune c ON l.id_Commune = c.id
