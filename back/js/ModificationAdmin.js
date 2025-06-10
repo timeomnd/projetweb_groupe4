@@ -69,7 +69,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
              // Validation mois
             if (mois) {
-                if (parseInt(mois) > 12) {
+                if (parseInt(mois) > 12 && parseInt(mois) < 1) {
                     alert("Le mois doit être inférieur ou égal à 12.");
                     return;
                 }
