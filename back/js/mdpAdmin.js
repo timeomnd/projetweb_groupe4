@@ -2,6 +2,15 @@
 
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    console.log(sessionStorage.getItem('admin_auth'));
+    
+    // Vérifie si l'utilisateur est déjà authentifié dans cette session
+    if (sessionStorage.getItem('admin_auth') === 'ok') {
+        document.getElementById('password-modal').style.display = "none";
+        return;
+    }
+
     const modal = document.getElementById('password-modal');
     const input = document.getElementById('admin-password');
     const btn = document.getElementById('admin-password-btn');
@@ -19,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert("Mot de passe incorrect. Retour à l'accueil utilisateur.");
                 window.location.href = "../User/accueil.html";
             } else {
+                sessionStorage.setItem('admin_auth', 'ok');
                 modal.style.display = "none";
             }
         })

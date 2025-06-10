@@ -37,7 +37,31 @@ function getTableColumns($db, $table) {
     $stmt->execute();
     return array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
 }
-
+function fetchInstallationPerNumber($db) {
+    $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? intval($_GET['limit']) : 100; // valeur par défaut 100
+    $sql = "SELECT 
+                i.mois_installation, 
+                i.an_installation, 
+                i.nb_panneaux, 
+                i.surface, 
+                i.puissance_crete, 
+                i.nb_onduleur, 
+                i.pente, 
+                i.pente_optimum, 
+                i.production_pvgis, 
+                i.orientation,
+                i.orientation_optimum,
+                c.nom_standard 
+            FROM Installation i
+            JOIN Localisation l ON i.id_Localisation = l.id
+            JOIN Commune c ON l.id_Commune = c.id
+            LIMIT :limit";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    return $result;
+}
 function fetchAll($db, $table) {
     // Si on veut juste le nombre d'enregistrements
     if (isset($_GET['count']) && $_GET['count'] === 'true') {
@@ -153,7 +177,7 @@ function fetchInstallations($db, $filters = [], $page = 1, $limit = 20) {
             JOIN Marque_onduleur mo ON o.id_Marque_onduleur = mo.id
             JOIN Modele_onduleur moo ON o.id_Modele_onduleur = moo.id
             $whereSql
-            ORDER BY i.an_installation DESC, i.mois_installation DESC
+            ORDER BY i.id
             LIMIT :limit OFFSET :offset";
 
     $stmt = $db->prepare($sql);
@@ -265,6 +289,12 @@ function updateOne($db, $table, $id, $data) {
 try {
     switch ($method) {
         case 'GET':
+            if($table === 'Installation' && isset($_GET['perNumber']) && $_GET['perNumber'] === 'true' && isset($_GET['limit']) && is_numeric($_GET['limit'])) {
+                // Récupération des installations par nombre
+                $result = fetchInstallationPerNumber($db);
+                sendJsonData($result, 200);
+                break; // on sort du switch après l'envoi de la réponse
+            }
             if ($table === 'Localisation' && isset($_GET['departement']) && isset($_GET['an'])) {
                 // Recherche par département et année
                 $departement = $_GET['departement'];
@@ -278,6 +308,19 @@ try {
                 $result = fetchInstallationListYears($db);
                 sendJsonData($result, 200);
                 break; // on sort du switch après l'envoi de la réponse
+            }
+            if ($table === 'Installation' && isset($_GET['page'])) {
+                // Pagination
+                $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+                $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 20;
+                $filters = [
+                    'marque_onduleur' => $_GET['marque_onduleur'] ?? null,
+                    'marque_panneau' => $_GET['marque_panneau'] ?? null,
+                    'departement' => $_GET['departement'] ?? null
+                ];
+                $result = fetchInstallations($db, $filters, $page, $limit);
+                sendJsonData($result, 200);
+                return; //return pour pas que le fetchall ne soit pas exécuté
             }
             //si installation et moyenne 
             if ($table === 'Installation' && isset($_GET['perYear']) && $_GET['perYear'] === 'true') {
@@ -294,19 +337,6 @@ try {
                 $result = fetchInstallationsPerRegionPerYear($db);
                 sendJsonData($result, 200);
                 break; // on sort du switch après l'envoi de la réponse
-            }
-            if ($table === 'Installation') {
-                // Pagination
-                $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-                $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 20;
-                $filters = [
-                    'marque_onduleur' => $_GET['marque_onduleur'] ?? null,
-                    'marque_panneau' => $_GET['marque_panneau'] ?? null,
-                    'departement' => $_GET['departement'] ?? null
-                ];
-                $result = fetchInstallations($db, $filters, $page, $limit);
-                sendJsonData($result, 200);
-                break;
             }
 
             // Sinon, on continue avec la logique classique
