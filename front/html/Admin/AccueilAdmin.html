@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../../css/accueilAdmin.css">
   <link rel="stylesheet" href="../../css/accueil.css">
   <script src="../js/accueil_admin.js"></script>
+  <script src = "../../../back/js/AccueilAdminAjax.js"></script>
  
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
 </head>
@@ -16,7 +17,7 @@
   <nav class="navbar navbar-expand-lg bg-white border-bottom w-100 px-4 py-3">
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center" href="accueil.html">
-        <img src="../../../../assets/ENERGISEN_LOGO.png" alt="Logo" width="70" height="70" class="me-2 map">
+        <img src="../../../assets/ENERGISEN_LOGO.png" alt="Logo" width="70" height="70" class="me-2 map">
         <strong class="info-blue nav-link fw-bold">ENERG'ISEN</strong>
       </a>
       <div class="collapse navbar-collapse justify-content-end">
@@ -42,48 +43,138 @@
         </small>
       </span>
     </div>
+    <!-- zone des information sur les installation. -->
+    <section class="container my-5 info-blue">
+  <h3 class="fw-bold text-center mb-4">Statistiques Générales</h3>
+  <div class="row g-4 info-blue">
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow p-3 text-center info-blue">
+        <h5 class="card-title">Total d'enregistrements</h5>
+        <p id="total-enregistrements" class="fs-4"></p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow p-3 text-center info-blue">
+        <h5 class="card-title">Installations par année</h5>
+        <p id="installations-annee" class="fs-4"></p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow p-3 text-center info-blue">
+        <h5 class="card-title">Installations par région</h5>
+        <p id="installations-region" class="fs-4"></p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow p-3 text-center info-blue">
+        <h5 class="card-title">Installations par année et région</h5>
+        <p id="installations-annee-region" class="fs-4"></p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow p-3 text-center info-blue">
+        <h5 class="card-title">Nombre d’installateurs</h5>
+        <p id="nb-installateurs" class="fs-4"></p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow p-3 text-center info-blue">
+        <h5 class="card-title">Marques d’onduleurs</h5>
+        <p id="nb-onduleurs" class="fs-4"></p>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+      <div class="card shadow p-3 text-center info-blue">
+        <h5 class="card-title">Marques de panneaux</h5>
+        <p id="nb-panneaux" class="fs-4"></p>
+      </div>
+    </div>
+  </div>
 
-    <!-- Stats -->
-   <div class="container">
-     <div class="row">
-      <div class="col-12">
-        <!-- on donne ici une hauteur minimum de 50vh -->
-        <div class="info-box map min-vh-50 d-flex flex-column justify-content-center align-items-center">
-          <span class="info-yellow">Visualisez l'ensemble des données </span><br>
-          
+</section>
+    < <!-- Formulaire -->
+      <div class="my-5 text-center">
+        <div class="p-4 bg-body-secondary rounded shadow-sm">
+          <h4 class="text-warning mb-3">Visualisez un nombre spécifique d'installations</h4>
+          <form class="row justify-content-center">
+            <div class="col-md-4">
+              <label for="dataInput" class="form-label">Nombre d'installations à afficher</label>
+              <input type="number" class="form-control" id="dataInput" name="installations" min="0" max="100" required>
+              <div class="form-text">Veuillez entrer un nombre entre 0 et 100.</div>
+            </div>
+            <div class="col-12 mt-3">
+              <button type="submit" class="btn btn-primary px-4" id="buttonValider">Valider</button>
+            </div>
+          </form>
+        </div>
+      </div>
 
-            <form>
-              <div class="mb-3">
-                <label for="installationsInput" class="form-label">Combien de données souhaitez vous visualisez ?</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="dataInput"
-                  name="installations"
-                  min="0"
-                  max="100"
-                  required
-                >
-                <div class="form-text">Veuillez entrer un nombre entre 0 et 100.</div>
-              </div>
-              <button type="submit" class="btn blue" id ="buttonValider">Valider</button>
-              </form>
+    <!-- Tableau stylisé et aligné -->
+      <div class="table-responsive my-5 info-blue">
+        <table class="table table-hover table-bordered align-middle bg-white shadow-sm">
+          <thead class="table-primary text-center">
+            <tr>
+              <th>
+                <div class="d-flex justify-content-center align-items-center gap-2 info-blue">
+                  <span class="material-symbols-outlined">calendar_month</span>
+                  <span>Date</span>
+                </div>
+              </th>
+              <th>
+                <div class="d-flex justify-content-center align-items-center gap-2 info-blue">
+                  <span class="material-symbols-outlined">confirmation_number</span>
+                  <span>Panneaux</span>
+                </div>
+              </th>
+              <th>
+                <div class="d-flex justify-content-center align-items-center gap-2 info-blue">
+                  <span class="material-symbols-outlined">square_foot</span>
+                  <span>Surface</span>
+                </div>
+              </th>
+              <th>
+                <div class="d-flex justify-content-center align-items-center gap-2 info-blue">
+                  <span class="material-symbols-outlined">electric_bolt</span>
+                  <span>Puissance</span>
+                </div>
+              </th>
+              <th>
+                <div class="d-flex justify-content-center align-items-center gap-2 info-blue">
+                  <span class="material-symbols-outlined">location_on</span>
+                  <span>Localisation</span>
+                </div>
+              </th>
+              <th>
+                <div class="d-flex justify-content-center align-items-center gap-2 info-blue">
+                  <span class="material-symbols-outlined">info</span>
+                  <span>Détails</span>
+                </div>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="text-center ">
+            <tr>
+              <td>01/2025</td>
+              <td>20</td>
+              <td>50 m²</td>
+              <td>5 kWc</td>
+              <td>Lille</td>
+              <td><a href="#" class="btn btn-sm btn-outline-primary info-blue">Plus</a></td>
+            </tr>
+            <tr>
+              <td>01/2025</td>
+              <td>20</td>
+              <td>50 m²</td>
+              <td>5 kWc</td>
+              <td>Lille</td>
+              <td><a href="#" class="btn btn-sm btn-outline-primary info-blue">Plus</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-              
-           
-
-    </main>
-
-
-
-
-
-
-
-
-
-
-
+  </main>
+   
 
   <!-- Footer plein écran -->
   <footer class="footer-full text-white d-flex justify-content-between align-items-center px-4 py-3">

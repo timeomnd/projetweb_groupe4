@@ -22,4 +22,21 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     console.warn("Aucun élément avec la classe .map trouvé !");
   }
+
 });
+
+ document.getElementById("admin-link").addEventListener("click", function(event) {
+    event.preventDefault();
+
+    const password = prompt("Entrez le mot de passe admin :");
+
+    if (!password) return;
+
+    ajaxRequest("POST", "http://10.10.51.124/back/verifyPassword.php", function(response) {
+      if (response.success) {
+        window.location.href = event.currentTarget.href;
+      } else {
+        alert("Mot de passe incorrect !");
+      }
+    }, "password=" + encodeURIComponent(password));
+  });
