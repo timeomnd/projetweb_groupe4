@@ -1,101 +1,82 @@
-window.addEventListener('DOMContentLoaded', () => {
-    // Requête AJAX pour récupérer 20 marque
-    ajaxRequest(    
-        'GET',
-        'http://10.10.51.124/back/Marque_onduleur&random=true&limit=20',
-         displayInstallationMarqueOnduleurs,
-        null
-    );
-});
-window.addEventListener('DOMContentLoaded', () => {
-    // Requête AJAX pour récupérer 20 marque
-    ajaxRequest(    
-        'GET',
-        'http://10.10.51.124/back/Marque_panneau&random=true&limit=20',
-         displayInstallationMarquePanneaux,
-        null
-    );
-});
-window.addEventListener('DOMContentLoaded', () => {
-    // Requête AJAX pour récupérer 20 marque
-    ajaxRequest(    
-        'GET',
-        'http://10.10.51.124/back/Departement&random=true&limit=20',
-         displayDepartement,
-        null
-    );
-});
-window.addEventListener('DOMContentLoaded', () => {
-    // Requête AJAX pour récupérer 20 marque
-    ajaxRequest(    
-        'GET',
-        'http://10.10.51.124/back/Departement&random=true&limit=20',
-         displayDepartement,
-        null
-    );
+ // chargement des données pour remplire les select de manier random
+ window.addEventListener('DOMContentLoaded', () => {
+   ajaxRequest('GET', 'http://10.10.51.124/back/Marque_onduleur&random=true&limit=20', displayInstallationMarqueOnduleurs, null);
+   ajaxRequest('GET', 'http://10.10.51.124/back/Marque_panneau&random=true&limit=20', displayInstallationMarquePanneaux, null);
+   ajaxRequest('GET', 'http://10.10.51.124/back/Departement&random=true&limit=20', displayDepartement, null);
+     const btn = document.querySelector("#button");
+    if (btn) {
+        btn.addEventListener('click', () => {
+           // preventDefault();
+           let marq_onduleur= document.querySelector("#selectOnduleur").selectedOptions[0].text;
+           let marq_panneau= document.querySelector("#selectPanneaux").selectedOptions[0].text;
+           let departement= document.querySelector("#selectDepartement").selectedOptions[0].text;
+           console.log(marq_onduleur,marq_panneau,departement);
+            ajaxRequest(
+                'GET',
+                `http://10.10.51.124/back/Installation&marque_onduleur=${marq_onduleur}&marque_panneau=${marq_panneau}&departement=${departement}&limit=100`,
+                displaySearch,
+                null
+            );
+        });
+    } else {
+        console.error("Bouton '.btn' non trouvé dans le DOM");
+    }
 });
 
-window.addEventListener('DOMContentLoaded', () => {
-    // Requête AJAX pour récupérer 20 marque
-    ajaxRequest(    
-        'GET',
-        'http://10.10.51.124/back/Installation&Marque_onduleur&Marque_panneau&Departement&limit=100',
-         displaySearsh,
-        null
-    );
-});
+
 
 function displayInstallationMarqueOnduleurs(datas){
+    const select = document.querySelector("#selectOnduleur");
     if (datas) {
-        for(let data of datas)
-        {
-            document.querySelector("#selectOnduleur").innerHTML+=`<option id='${data.id}'>${data.nom_marque}</option>`;
+        for (let data of datas) {
+            select.innerHTML += `<option value='${data.id}'>${data.nom_marque}</option>`;
         }
-
     } else {
-        document.querySelector("#selectOnduleur").textContent = 'Erreur';
+        select.textContent = 'Erreur';
     }
 }
+
 function displayInstallationMarquePanneaux(datas){
+    const select = document.querySelector("#selectPanneaux");
     if (datas) {
-        for(let data of datas)
-        {
-            document.querySelector("#selectPanneaux").innerHTML+=`<option id='${data.id}'>${data.nom_marque}</option>`;
+        for (let data of datas) {
+            select.innerHTML += `<option value='${data.id}'>${data.nom_marque}</option>`;
         }
-
     } else {
-        document.querySelector("selectPanneaux").textContent = 'Erreur';
+        select.textContent = 'Erreur';
     }
 }
+
 function displayDepartement(datas){
+    const select = document.querySelector("#selectDepartement");
     if (datas) {
-        for(let data of datas)
-        {
-            document.querySelector("#selectDepartement").innerHTML+=`<option id='${data.id}'>${data.dep_nom}</option>`;
+        for (let data of datas) {
+            select.innerHTML += `<option value='${data.id}'>${data.dep_nom}</option>`;
         }
-
     } else {
-        document.querySelector("#selectDepartement").textContent = 'Erreur';
+        select.textContent = 'Erreur';
     }
 }
-function displaySearsh(datas){
+
+
+function displaySearch(datas){
+    const tableBody = document.querySelector("#installationTableBody"); 
     if (datas) {
-        for(let data of datas)
-        {
-            document.querySelector("#selectDepartement").innerHTML+=`<tr>
-            <td>${data}/${data}</td>
-            <td>${data}</td>
-            <td>${data}</td>
-            <td>${data}</td>
-            <td>${data}</td>
-          </tr>
-          <tr class="table-secondary">
-            <td colspan="5"><a href="#">Cliquez ici pour voir les détails de cette installation</a></td>
-          </tr>`;
+        for (let data of datas) {
+            tableBody.innerHTML += `
+                <tr>
+                    <td>${data.mois_installation}/${data.an_installation}</td>
+                    <td>${data.nb_panneaux}</td>
+                    <td>${data.surface}</td>
+                    <td>${data.puissance_crete}</td>
+                    <td>${data.id_loclisation}</td>
+                </tr>
+                <tr class="table-secondary">
+                    <td colspan="5"><a href="detail.html">Cliquez ici pour voir les détails de cette installation</a></td>
+                </tr>
+            `;
         }
-
     } else {
-        document.querySelector("#selectDepartement").textContent = 'Erreur';
+        tableBody.innerHTML = '<tr><td colspan="5">Erreur</td></tr>';
     }
-
 }

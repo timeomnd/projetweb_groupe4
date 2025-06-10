@@ -122,6 +122,7 @@ function fetchForResearchForm($db, $marque_onduleur, $marque_panneau, $departeme
             i.mois_installation,
             i.nb_panneaux,
             i.surface,
+            c.nom_standard,
             i.puissance_crete,
             l.lat AS latitude,
             l.lon AS longitude
