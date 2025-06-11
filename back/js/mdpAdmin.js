@@ -1,9 +1,10 @@
 'use strict';
 
+// Ce script affiche une modale demandant le mot de passe admin à l'arrivée sur la page admin.
+// Si l'utilisateur a déjà validé le mot de passe dans cette session, la modale ne s'affiche plus.
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    console.log(sessionStorage.getItem('admin_auth'));
     
     // Vérifie si l'utilisateur est déjà authentifié dans cette session
     if (sessionStorage.getItem('admin_auth') === 'ok') {
@@ -17,6 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function checkPassword() {
         let mdp = input.value;
+        //On utilise fetch pour envoyer le mot de passe au serveur, car c'est une méthode native JS et la vérification du mdp admin est un cas simple.
+        //Cela suffit pour ce besoin ponctuel.
         fetch('../../../back/config/checkPasswordAdmin.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

@@ -2,7 +2,7 @@
 
 let currentPage = 1;
 let currentFilters = {};
-const resultsPerPage = 20;
+const resultsPerPage = 50;
 
 // Chargement des données pour remplir les selects de manière random
 window.addEventListener('DOMContentLoaded', () => {

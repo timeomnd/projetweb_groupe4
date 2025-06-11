@@ -1,7 +1,4 @@
 <?php
-
-
-
 require_once('database/database.php');
 
 // Connexion base de données
@@ -11,7 +8,7 @@ if (!$db) {
     exit;
 }
 
-// Réponse JSON
+// fonction pour la réponse JSON
 function sendJsonData($data, $code = 200) {
     header('Content-Type: application/json; charset=utf-8');
     http_response_code($code);
@@ -19,24 +16,29 @@ function sendJsonData($data, $code = 200) {
     exit;
 }
 
+// récupère la requête dans l'url puis la découpe en morceaux
 $request = isset($_GET['request']) ? explode('/', trim($_GET['request'], '/')) : [];
-
+//la table correspond au premier morceau de la requête
 $table = $request[0] ?? null;
+// l'id correspond au deuxième morceau de la requête si il y'a un / après la table
 $id = $request[1] ?? null;
 
-$method = $_SERVER['REQUEST_METHOD'];
+$method = $_SERVER['REQUEST_METHOD']; // méthode de la requête HTTP
 
 // Tables autorisées
 $allowedTables = ['Commune', 'Departement', 'Region', 'Installateur', 'Installation', 'Panneau', 'Onduleur', 'Marque_onduleur', 'Marque_panneau', 'Modele_onduleur', 'Modele_panneau', 'Localisation'];
 
 if (!$table || !in_array($table, $allowedTables)) {
-    sendJsonData(['error' => 'Table non autorisée ou non spécifiée'], 403);
+    sendJsonData(['error' => 'Table non autorisée ou non spécifiée'], 403); // si une table n'est pas spécifiée ou n'est pas autorisée
 }
+// fonction pour récupérer les colonnes d'une table
+// cette fonction est utilisée pour vérifier si une table existe et pour récupérer les colonnes d'une table
 function getTableColumns($db, $table) {
     $stmt = $db->prepare("DESCRIBE `$table`");
     $stmt->execute();
     return array_column($stmt->fetchAll(PDO::FETCH_ASSOC), 'Field');
 }
+// fonction pour récupérer les installations avec une limite précisée dans la requête 
 function fetchInstallationPerNumber($db) {
     $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? intval($_GET['limit']) : 100; // valeur par défaut 100
     $sql = "SELECT 
@@ -62,6 +64,8 @@ function fetchInstallationPerNumber($db) {
     $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return $result;
 }
+
+// fonction générique pour récupérer tous les enregistrements d'une table précisée en paramètre
 function fetchAll($db, $table) {
     // Si on veut juste le nombre d'enregistrements
     if (isset($_GET['count']) && $_GET['count'] === 'true') {
@@ -88,13 +92,14 @@ function fetchAll($db, $table) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+// fonction pour récupérer les années d'installation pour le formulaire de la carte
 function fetchInstallationListYears($db) {
     $sql = "SELECT DISTINCT an_installation from Installation ORDER BY an_installation LIMIT 20;";
     $stmt = $db->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
-// nombre d'installations par an , fonction spécifique car ne fonctionne que pour la table Installation qui a an_installation
+// retourne la moyenne des installations par an
 function fetchAverageInstallationsPerYear($db) {
     $sql = "SELECT ROUND(AVG(nombre)) AS moyenne_installations_par_an
             FROM (
@@ -107,6 +112,7 @@ function fetchAverageInstallationsPerYear($db) {
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
     return $result ?: ['moyenne_installations_par_an' => 0];
 }
+// Fonction pour récupérer les installations pour le formulaire de la carte
 function fetchForMapForm($db, $departement, $an) {
     $sql = "SELECT l.lat, l.lon, c.nom_standard AS commune, i.puissance_crete, i.an_installation, i.mois_installation, i.nb_panneaux, i.nb_onduleur, i.pente, i.pente_optimum, i.surface, i.production_pvgis, i.orientation, i.orientation_optimum 
             FROM Localisation l
@@ -121,6 +127,7 @@ function fetchForMapForm($db, $departement, $an) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+// Fonction pour récupérer les installations avec pagination et filtres
 function fetchInstallations($db, $filters = [], $page = 1, $limit = 20) {
     $offset = ($page - 1) * $limit;
     $where = [];
@@ -210,6 +217,7 @@ function fetchInstallations($db, $filters = [], $page = 1, $limit = 20) {
 
     return ['data' => $data, 'total' => (int)$total];
 }
+// Fonction pour récupérer la moyenne des installations par région
 function fetchInstallationsPerRegion($db) {
     $sql = "
         SELECT 
@@ -231,6 +239,7 @@ function fetchInstallationsPerRegion($db) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+// Fonction pour récupérer la moyenne des installations par région et par année
 function fetchInstallationsPerRegionPerYear($db) {
     $sql = "
         SELECT 
@@ -251,18 +260,18 @@ function fetchInstallationsPerRegionPerYear($db) {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-
+// Fonction pour récupérer un enregistrement spécifique par ID
 function fetchOne($db, $table, $id) {
     $stmt = $db->prepare("SELECT * FROM `$table` WHERE id = ?");
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
-
+// Fonction pour supprimer un enregistrement spécifique par ID
 function deleteOne($db, $table, $id) {
     $stmt = $db->prepare("DELETE FROM `$table` WHERE id = ?");
     return $stmt->execute([$id]);
 }
-
+// Fonction pour insérer un nouvel enregistrement dans une table
 function insertOne($db, $table, $data) {
     $keys = array_keys($data);
     $fields = '`' . implode('`, `', $keys) . '`';
@@ -271,7 +280,7 @@ function insertOne($db, $table, $data) {
     $stmt = $db->prepare("INSERT INTO `$table` ($fields) VALUES ($placeholders)");
     return $stmt->execute($values);
 }
-
+// Fonction pour mettre à jour un enregistrement spécifique par ID
 function updateOne($db, $table, $id, $data) {
     $fields = '';
     $values = [];
@@ -358,7 +367,7 @@ try {
             }
             break;
 
-        case 'POST':
+        case 'POST': // Insertion d'un nouvel enregistrement
             $data = json_decode(file_get_contents("php://input"), true);
             if (!$data || !is_array($data)) {
                 sendJsonData(['error' => 'Données JSON invalides'], 400);
@@ -367,7 +376,7 @@ try {
             sendJsonData(['created' => $success], $success ? 201 : 400);
             break;
 
-        case 'PATCH':
+        case 'PATCH': // Mise à jour d'un enregistrement existant
             if (!$id) sendJsonData(['error' => 'ID requis'], 400);
             $data = json_decode(file_get_contents("php://input"), true);
             if (!$data || !is_array($data)) {
@@ -377,7 +386,7 @@ try {
             sendJsonData(['updated' => $success], $success ? 200 : 400);
             break;
 
-        case 'DELETE':
+        case 'DELETE': // Suppression d'un enregistrement existant
             if (!$id) sendJsonData(['error' => 'ID requis'], 400);
             $success = deleteOne($db, $table, $id);
             sendJsonData(['deleted' => $success], $success ? 200 : 400);

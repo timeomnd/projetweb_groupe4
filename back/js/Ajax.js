@@ -1,35 +1,33 @@
-
 'use strict';
 
 //------------------------------------------------------------------------------
 //--- ajaxRequest --------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Perform an Ajax request.
-// \param type The type of the request (GET, DELETE, POST, PUT).
-// \param url The url with the data.
-// \param callback The callback to call where the request is successful.
-// \param data The data associated with the request.
+// Effectue une requête Ajax.
+// \param type Le type de la requête (GET, DELETE, POST, PUT).
+// \param url L'URL vers laquelle envoyer les données.
+// \param callback La fonction à appeler lorsque la requête réussit.
+// \param data Les données associées à la requête.
 function ajaxRequest(type, url, callback, data = null)
 {
     let xhr;
 
-    // Create XML HTTP request.
+    // Création de l'objet XMLHttpRequest.
     xhr = new XMLHttpRequest();
     if (type == 'GET' && data != null)
         url += '?' + data;
 
     xhr.open(type, url); 
- 
 
-    // Pour POST/PATCH, envoie du JSON
+    // Pour POST/PATCH, envoie des données en JSON
     if (type === 'POST' || type === 'PATCH') {
         xhr.setRequestHeader('Content-Type', 'application/json');
     } else {
-        //GET/DELETE
+        // Pour GET/DELETE
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     }
 
-    // Add the onload function.
+    // Ajout de la fonction à exécuter lors du chargement.
     xhr.onload = () =>
     {
         switch (xhr.status)
@@ -44,8 +42,8 @@ function ajaxRequest(type, url, callback, data = null)
         }
     };
 
-    // Send XML HTTP request.
-     if (type === 'POST' || type === 'PUT' || type === 'PATCH') {
+    // Envoi de la requête XMLHttpRequest.
+    if (type === 'POST' || type === 'PUT' || type === 'PATCH') {
         xhr.send(data ? JSON.stringify(data) : null);
     } else {
         xhr.send();
@@ -55,21 +53,21 @@ function ajaxRequest(type, url, callback, data = null)
 //------------------------------------------------------------------------------
 //--- httpErrors ---------------------------------------------------------------
 //------------------------------------------------------------------------------
-// Display an error message accordingly to an error code.
-// \param errorCode The error code (HTTP status for example).
+// Affiche un message d'erreur en fonction d'un code d'erreur HTTP.
+// \param errorCode Le code d'erreur (code de statut HTTP par exemple).
 function httpErrors(errorCode)
 {
     let messages =
         {
             400: 'Requête incorrecte',
-            401: 'Authentifiez vous',
+            401: 'Authentifiez-vous',
             403: 'Accès refusé',
             404: 'Page non trouvée',
             500: 'Erreur interne du serveur',
             503: 'Service indisponible'
         };
 
-    // Display error.
+    // Affichage du message d'erreur.
 
     const errorsElement = document.getElementById('errors');
     if (errorsElement && messages[errorCode]) {

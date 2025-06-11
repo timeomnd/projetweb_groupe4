@@ -1,7 +1,7 @@
 'use strict';
 
 let currentPage = 1;
-const resultsPerPage = 20;
+const resultsPerPage = 50;
 
 window.addEventListener('DOMContentLoaded', () => {
     fetchAndDisplayInstallations();
@@ -21,7 +21,7 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', function(e) {
         // Suppression
         if (e.target && e.target.classList.contains('btn-supprimer')) {
-            idToDelete = e.target.getAttribute('data-id');
+            idToDelete = e.target.getAttribute('data-id'); //On récupère l'id de l'installation à supprimer (voir dans le HTML plus loin l'attribut data-id) 
             if (idToDelete) deleteModal.style.display = 'flex';
         }
         // Modification
@@ -43,7 +43,8 @@ window.addEventListener('DOMContentLoaded', () => {
                     () => {
                         deleteModal.style.display = 'none';
                         idToDelete = null;
-                        fetchAndDisplayInstallations();
+                        alert("Installation supprimée avec succès.");
+                        fetchAndDisplayInstallations(); //Pour rafraîchir la liste après suppression
                     }
                 );
             }
@@ -63,7 +64,7 @@ window.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
             if (!idToEdit) return;
 
-            // Récupère les valeurs non vides
+            // Récupère les valeurs non vides uniquement
             const data = {};    
             const mois = editForm['edit-mois'].value;
 
@@ -90,6 +91,9 @@ window.addEventListener('DOMContentLoaded', () => {
             if (editForm['edit-production'].value) data.production_pvgis = parseFloat(editForm['edit-production'].value);
             if (editForm['edit-puissance'].value) data.puissance_crete = parseFloat(editForm['edit-puissance'].value);
 
+            // Si aucun champ n'a été rempli dans le formulaire de modification,
+            // on affiche une alerte et on empêche l'envoi de la requête PATCH.
+            // Cela évite d'envoyer une modification vide au serveur.
             if (Object.keys(data).length === 0) {
                 alert("Veuillez remplir au moins un champ à modifier.");
                 return;
@@ -143,8 +147,14 @@ function displayInstallation(result) {
             <td>${data.surface}</td>
             <td>${data.production_pvgis}</td>
             <td>${data.puissance_crete}</td>
-            <td>
-                <button class="btn btn-warning btn-sm btn-modifier" data-id="${data.id}">Modifier</button>
+            <td>    
+                 <!-- 
+                On place l'id de l'installation dans un attribut data-id sur les boutons Modifier et Supprimer.
+                Cet id n'est pas affiché à l'utilisateur, mais il est accessible en JS lors du clic sur ces boutons.
+                Cela permet de savoir quelle installation modifier ou supprimer lors de la requête AJAX.
+                -->
+
+                <button class="btn btn-warning btn-sm btn-modifier" data-id="${data.id}">Modifier</button> 
                 <button class="btn btn-danger btn-sm btn-supprimer" data-id="${data.id}">Supprimer</button>
             </td>
         </tr>`;

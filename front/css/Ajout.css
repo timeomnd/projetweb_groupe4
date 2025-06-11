@@ -1,26 +1,27 @@
+    /* Style général du fond et de la police */
 body {
       background: #f8f9fa;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
+    /* Conteneur du formulaire centré et largeur max */
     .form-container {
       max-width: 600px;
       margin: 50px auto;
     }
-
+    /* Carte du formulaire avec fond blanc, arrondi et ombre */
     .form-card {
       background: white;
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-
+    /* Titre principal centré et coloré */
     h1 {
       text-align: center;
       margin-top: 30px;
       color: #1e3a8a;
     }
-
+    /* Pied de page bleu avec texte blanc */
     .footer-full {
       width: 100%;
       background-color: #1e3a8a;
@@ -28,21 +29,26 @@ body {
       padding: 0.75rem 2rem;
       font-size: 0.9rem;
     }
+    /* Texte bleu pour les infos */
     .info-blue {
       color: #1e3a8a;
     }
+    /* Fond bleu pour les boutons ou éléments */
     .blue{
       background-color: #1e3a8a;
     }
+    /* Effet hover vert sur les boutons bleus */
     .blue:hover {
       background-color: #16a34a; /* vert */
       color: white; /* garde le texte blanc au survol */
       border-color: #16a34a;
     }
+    /* Effet hover vert et gras sur les liens de navigation */
     .nav-link:hover{
       color: #16a34a;
       font-weight: bold;
     }
+    /* Labels des champs en gras */
     .form-label{
       font-weight: bold;
     }

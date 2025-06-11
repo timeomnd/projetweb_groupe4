@@ -1,28 +1,20 @@
-/* Footer full width en bas de page /
-  .footer-full {
-    background-color:#1e3a8a;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-  }
 
-  / Centrage de la recherche */
+  /* Centrage de la barre de recherche */
   .search-bar {
     max-width: 600px;
     margin: 0 auto;
   }
-
+/* Style de l'input de recherche */
   .search-bar input {
     border: 2px solid #1e3a8a;
     color: #1e3a8a;
   }
-
+/* Style du placeholder de l'input de recherche */
   .search-bar input::placeholder {
     color: #1e3a8a;
     opacity: 0.6;
   }
+/* Style pour les cases à cocher personnalisées */
 .form-check-input {
   width: 1.2em;
   height: 1.2em;
@@ -31,15 +23,16 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
+/* Style quand la case à cocher est cochée */
 .form-check-input:checked {
   background-color: #1e3a8a;
   border-color: #1e3a8a;
 }
-
+/* Fond bleu pour les boutons ou éléments avec la classe .blue */
 .blue{
     background-color:#1e3a8a;
 }
+/* Effet hover vert et gras sur les liens de navigation */
 .nav-link:hover{
   color: #16a34a;
   font-weight: bold;

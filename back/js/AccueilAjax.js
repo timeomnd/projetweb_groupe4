@@ -1,6 +1,8 @@
 'use strict';
 
 window.addEventListener('DOMContentLoaded', () => {
+
+    //Nombre d'installations
     ajaxRequest(    
         'GET',
         'http://10.10.51.124/back/Installation?count=true',
@@ -8,6 +10,7 @@ window.addEventListener('DOMContentLoaded', () => {
         null
     );
 
+    //Nombre de marques d'onduleurs,
     ajaxRequest(    
         'GET',
         'http://10.10.51.124/back/Marque_onduleur?count=true',
@@ -15,20 +18,24 @@ window.addEventListener('DOMContentLoaded', () => {
         null
     );
 
-      ajaxRequest(    
+    //Nombre de marques de panneaux
+    ajaxRequest(    
         'GET',
         'http://10.10.51.124/back/Marque_panneau?count=true',
         displayPanneauMarqueCount,
         null
     );
 
-     ajaxRequest(    
+
+    //Nombre d'installateurs
+    ajaxRequest(    
         'GET',
         'http://10.10.51.124/back/Installateur?count=true',
         displayInstallateurCount,
         null
     );
 
+    //Moyenne d'installations par an
     ajaxRequest(    
         'GET',
         'http://10.10.51.124/back/Installation?perYear=true',
@@ -36,6 +43,8 @@ window.addEventListener('DOMContentLoaded', () => {
         null
     );
 
+
+    //Moyenne d'installations par région
     ajaxRequest(    
         'GET',
         'http://10.10.51.124/back/Installation?perRegion=true',
@@ -43,22 +52,13 @@ window.addEventListener('DOMContentLoaded', () => {
         null
     )
 
+    //Moyenne d'installations par région et par an
     ajaxRequest(    
         'GET',
         'http://10.10.51.124/back/Installation?perRegionPerYear=true',
         displayInstallationPerRegionPerYear,
         null
     );  
-
-    ajaxRequest(    
-        'GET',
-        'http://10.10.51.124/back/Region',
-        displayRegion,
-        null
-    );
-
-
-
 
 });
 
@@ -132,15 +132,5 @@ function displayInstallationPerRegionPerYear(data) {
     }
 }
 
-function displayRegion(datas){
-    if (datas) {
-        for(let data of datas)
-        {
-            document.querySelector("#regionSelect").innerHTML+=`<option id='${data.id}'>${data.reg_nom}</option>`;
-        }
-    }
-    else {
-        document.querySelector('#regionSelect').textContent = 'Erreur';
-    }
-}
+
 

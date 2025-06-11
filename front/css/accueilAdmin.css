@@ -1,8 +1,11 @@
+/* Fond bleu pour les boutons ou éléments avec la classe .blue */
 
 .blue{
   background-color: #1e3a8a;
     color: white;
 }
+/* Effet hover vert sur les éléments .blue */
+
 .blue:hover{
   background-color: #16a34a;
     color: white; /* garde le texte blanc au survol */

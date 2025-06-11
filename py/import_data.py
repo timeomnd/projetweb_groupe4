@@ -66,11 +66,7 @@ def get_or_create_onduleur(cursor, marque, modele):
 
 def get_or_create_localisation(cursor, lat, lon, nom_commune, ville_map):
     code_insee = ville_map.get(nom_commune.strip())
-    if not code_insee:
-        print(f"[⚠] Commune introuvable : '{nom_commune}'")
-        return None
-    else:
-        print(f"[✔] Commune trouvée : '{nom_commune}' avec code INSEE {code_insee}")
+
 
     cursor.execute("INSERT INTO Localisation (lat, lon, id_Commune) VALUES (%s, %s, %s)", (lat, lon, code_insee))
     return cursor.lastrowid
@@ -102,7 +98,7 @@ conn = mysql.connector.connect(
 )
 cursor = conn.cursor(buffered=True)
 
-# Chargement de la map ville → code_insee
+# Chargement de la map qui associe ville → code_insee
 ville_map = load_ville_to_insee_map()
 
 # Lecture CSV
@@ -122,4 +118,4 @@ with open("../csv/data_corrige.csv", newline='', encoding="utf-8") as csvfile:
 conn.commit()
 cursor.close()
 conn.close()
-print("✅ Données importées avec succès dans toutes les tables.")
+print(" Données importées avec succès dans toutes les tables.")

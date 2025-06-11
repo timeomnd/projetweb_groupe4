@@ -22,6 +22,5 @@ document.addEventListener("DOMContentLoaded", () => {
   } else {
     console.warn("Aucun élément avec la classe .map trouvé !");
   }
-
 });
 

@@ -1,3 +1,4 @@
+/* Style pour les cases à cocher personnalisées */
 .form-check-input {
   width: 1.2em;
   height: 1.2em;
@@ -6,14 +7,16 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
+/* Style quand la case à cocher est cochée */
 .form-check-input:checked {
   background-color: #1e3a8a;
   border-color: #1e3a8a;
 }
+/* Fond bleu pour les boutons ou éléments avec la classe .blue */
 .blue{
     background-color:#1e3a8a;
 }
+/* Effet hover vert sur les éléments .blue */
 .blue:hover{
-    background-color: #16a34a;
+  background-color: #16a34a;
 }

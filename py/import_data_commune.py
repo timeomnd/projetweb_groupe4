@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+#Ce fichier Pyhon génère dans un fichier data_commune.sql les requêtes SQL pour insérer les données des communes, départements et régions à partir du fichier CSV.
+
 import csv
 
 sqlfile = open("sql/data_commune.sql", "w", encoding="utf-8")
@@ -35,4 +38,4 @@ with open('csv/communes-france-2024-limite.csv', newline='', encoding='utf-8') a
 
 sqlfile.write("\n-- Fin de l'import des communes\n\n")
 sqlfile.close()
-print("✅ Requêtes pour les communes, département et régions générées dans data.sql")
+print("Requêtes pour les communes, département et régions générées dans data.sql")

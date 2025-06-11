@@ -1,8 +1,12 @@
+    /* Titres principaux centrés et colorés */
+
 h1,h2 {
       text-align: center;
       margin: 40px 0 20px;
       color: #1e3a8a;
     }
+    /* Titres principaux centrés et colorés */
+
     .table-container {
       max-width: 95%;
       margin: 0 auto 50px;
@@ -11,16 +15,20 @@ h1,h2 {
       border-radius: 15px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    /* Centrage du texte dans les cellules de la table */
     .table th, .table td {
       text-align: center;
       vertical-align: middle;
     }
+    /* Fond bleu pour les éléments d'information */
     .info-blue{
       background-color: #1e3a8a;
     }
+    /* Texte bleu pour certains éléments */
     .color-blue{
       color: #1e3a8a;
     }
+    /* Effet hover vert et gras sur les liens de navigation */
     .nav-link:hover{
       color: #16a34a;
       font-weight: bold;

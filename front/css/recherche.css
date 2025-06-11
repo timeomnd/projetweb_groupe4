@@ -1,18 +1,21 @@
-
+/* Centrage de la barre de recherche */
   .search-bar {
     max-width: 600px;
     margin: 0 auto;
   }
 
+/* Style de l'input de recherche */
   .search-bar input {
     border: 2px solid #1e3a8a;
     color: #1e3a8a;
   }
+/* Style du placeholder de l'input de recherche */
 
-  .search-bar input::placeholder {
+.search-bar input::placeholder {
     color: #1e3a8a;
     opacity: 0.6;
-  }
+    }
+/* Style pour les cases à cocher personnalisées */
 .form-check-input {
   width: 1.2em;
   height: 1.2em;
@@ -21,15 +24,16 @@
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
+/* Style pour les cases à cocher personnalisées */
 .form-check-input:checked {
   background-color: #1e3a8a;
   border-color: #1e3a8a;
 }
-
+/* Style du placeholder de l'input de recherche */
 .blue{
     background-color:#1e3a8a;
 }
+/* Style pour les cases à cocher personnalisées */
 .blue:hover {
   background-color: #16a34a; /* vert */
   color: white; /* garde le texte blanc au survol */
