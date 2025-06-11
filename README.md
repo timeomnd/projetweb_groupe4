@@ -64,5 +64,7 @@ IMPORTANT : Vous aurez besoin de Python 3 ainsi que de l'extension sql connector
 
 Maintenant la base de données est complète, vous pouvez vous rendre sur le site web via l'adresse 10.10.51.124 dans votre navigateur. 
 
-La partie admin du site demande un mot de passe sécurisé (hashé). Le mot de passe est "mdpadmin"
+La partie admin du site demande un mot de passe sécurisé (hashé). Le mot de passe est "mdpadmin" 
+
+
 

@@ -1,7 +1,7 @@
 'use strict';
 
 let currentPage = 1;
-const resultsPerPage = 50;
+const resultsPerPage = 20;
 
 window.addEventListener('DOMContentLoaded', () => {
     fetchAndDisplayInstallations();
@@ -26,7 +26,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         // Modification
         if (e.target && e.target.classList.contains('btn-modifier')) {
-            idToEdit = e.target.getAttribute('data-id');
+            idToEdit = e.target.getAttribute('data-id'); //Même principe que pour la suppression, on récupère l'id de l'installation à modifier
             // Vide les champs à chaque ouverture
             Array.from(editForm.elements).forEach(input => input.value = '');
             editModal.style.display = 'flex';
